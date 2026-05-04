@@ -104,7 +104,7 @@ export default function LandingPage() {
 				<nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4 md:px-8">
 					<div className="flex items-center gap-3">
 						<div className="relative h-9 w-9 overflow-hidden rounded-xl border border-white/20 bg-white/5 shadow-[0_0_30px_rgba(0,212,255,0.25)]">
-							<img src="/signal-forge-logo.png" alt="Signal Forge Pro logo" className="h-full w-full object-cover motion-float" />
+							<img src={`${import.meta.env.BASE_URL}/signal-forge-logo.png`} alt="Signal Forge Pro logo" className="h-full w-full object-cover motion-float" />
 						</div>
 						<p className="text-sm font-semibold tracking-wide text-white md:text-base">Signal Forge Pro</p>
 					</div>
@@ -167,7 +167,7 @@ export default function LandingPage() {
 								<div className="relative mx-auto flex w-fit items-center justify-center">
 									<div className="absolute h-24 w-24 rounded-full bg-[#00D4FF]/30 blur-2xl motion-pulse-glow" />
 									<img
-										src="/signal-forge-logo.png"
+										src={`${import.meta.env.BASE_URL}/signal-forge-logo.png`}
 										alt="Signal Forge Pro symbol"
 										className="relative z-10 h-20 w-20 rounded-xl object-cover shadow-[0_0_35px_rgba(0,212,255,0.55)] motion-float"
 									/>
