@@ -8,6 +8,7 @@ import {
 	Bot,
 	Cpu,
 	Download,
+	FileBadge2,
 	GitBranch,
 	Globe,
 	Lock,
@@ -55,6 +56,8 @@ const features = [
 		icon: ShieldCheck,
 	},
 ];
+
+const membershipFormUrl = 'https://forms.gle/dU8LwPXDmekQ8k4R7';
 
 export default function LandingPage() {
 	const [activePlatform, setActivePlatform] = useState<'Windows' | 'Android'>('Windows');
@@ -311,6 +314,35 @@ export default function LandingPage() {
 								<p className="mt-2 text-sm text-slate-300">{feature.description}</p>
 							</div>
 						))}
+					</div>
+				</section>
+
+				<section
+					data-aos="fade-up"
+					className="relative overflow-hidden rounded-2xl border border-[#00D4FF]/30 bg-gradient-to-br from-[#00D4FF]/12 via-white/[0.04] to-[#00FF41]/10 p-6 shadow-[0_0_40px_rgba(0,212,255,0.12)] backdrop-blur-xl md:p-8"
+				>
+					<div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#00D4FF]/20 blur-3xl" />
+					<div className="pointer-events-none absolute -bottom-16 -left-10 h-44 w-44 rounded-full bg-[#00FF41]/15 blur-3xl" />
+					<div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+						<div className="max-w-2xl space-y-3">
+							<p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#7CEBFF]">
+								<FileBadge2 size={14} />
+								Membership & Licensing
+							</p>
+							<h2 className="text-2xl font-semibold text-white md:text-3xl">Apply for Membership Registration and License Access</h2>
+							<p className="text-sm leading-relaxed text-slate-300 md:text-base">
+								Complete the official application to register your membership and request your software license. Our team reviews submissions
+								promptly to activate verified accounts and streamline onboarding.
+							</p>
+						</div>
+						<button
+							type="button"
+							onClick={() => window.open(membershipFormUrl, '_blank', 'noopener,noreferrer')}
+							className="inline-flex items-center justify-center gap-2 self-start rounded-2xl border border-[#00D4FF]/50 bg-[#00D4FF]/15 px-5 py-3 text-sm font-semibold text-[#9DEFFF] transition hover:border-[#00D4FF] hover:bg-[#00D4FF]/25 md:self-center"
+						>
+							Apply Now
+							<ArrowRight size={15} />
+						</button>
 					</div>
 				</section>
 
