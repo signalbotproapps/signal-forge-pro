@@ -20,7 +20,7 @@ export const appLinks: AppLink[] = [
         name: 'Signal Forge Pro Mobile',
         platform: 'Android',
         version: 'v2.4.1',
-        size: '86 MB',
+        size: '120 MB',
         href: 'https://github.com/signalbotproapps/signal-forge-pro/releases/download/v2.4.1/SignalForgePro.apk',
     },
 ];
