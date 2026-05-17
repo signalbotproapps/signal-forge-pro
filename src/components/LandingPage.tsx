@@ -236,6 +236,33 @@ export default function LandingPage() {
 							</button>
 						</div>
 					</div>
+
+					{/* Conditionally Render Android Beta Warning Card */}
+					{activePlatform === 'Android' && (
+						<div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 backdrop-blur-xl animate-fadeIn">
+							<div className="flex items-start gap-3">
+								<div className="mt-0.5 text-amber-400 shrink-0">
+									<AlertTriangle size={18} />
+								</div>
+								<div className="space-y-1">
+									<h4 className="text-sm font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1">
+										Android Mobile Beta Execution Warning
+									</h4>
+									<p className="text-xs leading-relaxed text-slate-300">
+										The mobile application is currently in <span className="text-amber-400 font-medium">BETA</span>. 
+										Android operating systems aggressively put background or minimized applications to sleep to preserve battery runtime resources.
+									</p>
+									<div className="mt-2 rounded-lg bg-black/40 p-2.5 text-xs text-slate-300 border border-white/5">
+										<p className="font-medium text-[#7CEBFF] mb-1">💡 Critical Execution Rule:</p>
+										To ensure successful automated trade execution directly to your <span className="text-white font-medium">Binance Account</span>, 
+										keep the app <span className="text-emerald-400 font-semibold underline">MAXIMIZED and actively displayed in the foreground</span>. 
+										Monitor your incoming Telegram signals closely and make sure the interface remains in front of you while trading.
+									</div>
+								</div>
+							</div>
+						</div>
+					)}
+
 					<div className="grid gap-4 md:grid-cols-2">
 						{filteredApps.map((app) => (
 							<article key={app.name} className="rounded-2xl border border-white/10 bg-black/20 p-5">
