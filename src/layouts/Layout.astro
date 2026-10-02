@@ -7,23 +7,33 @@ interface Props {
 }
 
 const {
-	title = 'Signal Forge Pro | Precision Trading. Local Control.',
-	description = 'Experience the Signal Forge Pro ecosystem with local-first desktop and mobile trading tools.',
+	title = 'Signal Forge Pro & Grok Desk | Next-Gen AI Trading Ecosystem',
+	description = 'The ultimate local-first algorithmic trading ecosystem. Featuring Signal Forge Pro Desktop, Grok Desk AI Workstation, and Signal Forge Pro Mobile with sub-millisecond execution.',
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth dark">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`} />
+		<link rel="icon" href={`${import.meta.env.BASE_URL}/favicon.ico`} />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
+		<meta name="theme-color" content="#050811" />
+		
+		<!-- Google Fonts for crisp futuristic trading aesthetic -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+
 		<title>{title}</title>
 	</head>
-	<body class="min-h-screen bg-[#0B0E11] text-slate-100 antialiased">
+	<body class="min-h-screen bg-[#050811] text-slate-100 antialiased selection:bg-[#00F59B]/20 selection:text-[#00F59B]">
 		<slot />
 	</body>
 </html>

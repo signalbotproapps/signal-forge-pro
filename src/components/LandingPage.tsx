@@ -1,71 +1,118 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import {
 	ArrowRight,
 	AlertTriangle,
-	BadgeCheck,
 	Bot,
 	Cpu,
 	Download,
 	FileBadge2,
-	GitBranch,
 	Globe,
 	Lock,
-	MonitorSmartphone,
-	Rocket,
 	ShieldCheck,
-	Smartphone,
 	TimerOff,
 	X,
+	Sparkles,
+	Zap,
+	Layers,
+	CheckCircle2,
+	Radio,
 } from 'lucide-react';
-import { appLinks } from '../data/appLinks';
-
-const ecosystemCards = [
-	{
-		name: 'Aura Signal Generator',
-		description: 'AI-assisted market signal generation with fast local processing and strategy tuning.',
-		accent: 'from-[#00FF41]/25 to-transparent',
-	},
-	{
-		name: 'Tele Apex',
-		description: 'Lightning Telegram delivery bridge for actionable alerts and operational command flow.',
-		accent: 'from-[#00D4FF]/25 to-transparent',
-	},
-	{
-		name: 'Signal Forge Pro',
-		description: 'The command layer unifying execution, logging, and local activation controls.',
-		accent: 'from-[#00FF41]/20 via-[#00D4FF]/20 to-transparent',
-	},
-];
-
-const features = [
-	{
-		title: 'No Cloud Latency',
-		description: 'Trade logic runs where decisions happen: your machine, your network, your edge.',
-		icon: TimerOff,
-	},
-	{
-		title: 'Data Privacy',
-		description: 'Signals and analytics remain on-device to reduce external exposure risk.',
-		icon: Lock,
-	},
-	{
-		title: 'Local Licensing System',
-		description: 'Hardware-bound activation secures usage without always-online dependencies.',
-		icon: ShieldCheck,
-	},
-];
+import CyberCanvasBackground from './CyberCanvasBackground';
+import LiveMarketTicker from './LiveMarketTicker';
+import InteractiveTerminalSimulator from './InteractiveTerminalSimulator';
+import AppCard3D from './AppCard3D';
+import { appLinks, type AppLink } from '../data/appLinks';
 
 const membershipFormUrl = 'https://forms.gle/dU8LwPXDmekQ8k4R7';
 
+const ecosystemCards = [
+	{
+		name: 'Grok Neural Core',
+		tag: 'Next-Gen AI',
+		description: 'Multi-modal market reasoning engine analyzing institutional orderflow, liquidity sentiment, and macro volatility signals in real time.',
+		accent: 'from-[#A855F7]/30 via-[#EC4899]/15 to-transparent',
+		border: 'border-[#A855F7]/30',
+		icon: Bot,
+		iconColor: '#A855F7',
+	},
+	{
+		name: 'Signal Forge Pro Kernel',
+		tag: 'Zero-Latency Engine',
+		description: 'The master desktop execution hub. Handles local sub-millisecond order routing, Binance API webhooks, and on-device risk guards.',
+		accent: 'from-[#00F59B]/25 via-[#00D4FF]/15 to-transparent',
+		border: 'border-[#00F59B]/30',
+		icon: Zap,
+		iconColor: '#00F59B',
+	},
+	{
+		name: 'Tele Apex Relay',
+		tag: 'Lightning Delivery',
+		description: 'Encrypted peer-to-peer Telegram bridge delivering instantaneous actionable trade alerts and remote command triggers.',
+		accent: 'from-[#00D4FF]/25 via-blue-500/10 to-transparent',
+		border: 'border-[#00D4FF]/30',
+		icon: Radio,
+		iconColor: '#00D4FF',
+	},
+	{
+		name: 'Hardware License Sentinel',
+		tag: 'Hardware-Bound',
+		description: 'Cryptographically binds software activation to your physical machine ID. Zero telemetry snooping and zero cloud reliance.',
+		accent: 'from-[#F59E0B]/25 via-amber-500/10 to-transparent',
+		border: 'border-[#F59E0B]/30',
+		icon: ShieldCheck,
+		iconColor: '#F59E0B',
+	},
+];
+
+const featureHighlights = [
+	{
+		title: 'Sub-Millisecond Local Execution',
+		description: 'Trade logic executes locally on your hardware. Eliminate cloud network hops, broker slippage, and server outages.',
+		icon: TimerOff,
+		accent: '#00F59B',
+	},
+	{
+		title: '100% On-Device Data Privacy',
+		description: 'Your exchange API keys, trading strategies, and order history never leave your computer. True sovereign algorithmic trading.',
+		icon: Lock,
+		accent: '#00D4FF',
+	},
+	{
+		title: 'Hardware-Bound Licensing',
+		description: 'Each license key validates cryptographically against your local CPU & motherboard fingerprint, ensuring unmatched security.',
+		icon: ShieldCheck,
+		accent: '#A855F7',
+	},
+	{
+		title: 'Autonomous Grok Intelligence',
+		description: 'Harness the cutting edge of deep reasoning AI to detect hidden liquidity pools and institutional order blocks before price explodes.',
+		icon: Sparkles,
+		accent: '#F59E0B',
+	},
+];
+
 export default function LandingPage() {
-	const [activePlatform, setActivePlatform] = useState<'Windows' | 'Android'>('Windows');
+	const [activeFilter, setActiveFilter] = useState<'All' | 'Windows' | 'Android'>('All');
 	const [isWaiverOpen, setIsWaiverOpen] = useState(false);
 	const [acceptedWaiver, setAcceptedWaiver] = useState(false);
 	const [pendingDownloadUrl, setPendingDownloadUrl] = useState<string | null>(null);
 	const [pendingDownloadLabel, setPendingDownloadLabel] = useState('');
-	const filteredApps = appLinks.filter((app) => app.platform === activePlatform);
+
+	const baseUrl = import.meta.env.BASE_URL || '/';
+
+	const resolveUrl = (path: string) => {
+		if (path.startsWith('http')) return path;
+		const cleanBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+		const cleanPath = path.startsWith('/') ? path : `/${path}`;
+		return `${cleanBase}${cleanPath}`;
+	};
+
+	const filteredApps = useMemo(() => {
+		if (activeFilter === 'All') return appLinks;
+		return appLinks.filter((app) => app.platform === activeFilter);
+	}, [activeFilter]);
 
 	const openWaiver = (url: string, label: string) => {
 		setPendingDownloadUrl(url);
@@ -75,10 +122,7 @@ export default function LandingPage() {
 	};
 
 	const confirmDownload = () => {
-		if (!acceptedWaiver || !pendingDownloadUrl) {
-			return;
-		}
-
+		if (!acceptedWaiver || !pendingDownloadUrl) return;
 		window.open(pendingDownloadUrl, '_blank', 'noopener,noreferrer');
 		setIsWaiverOpen(false);
 		setPendingDownloadUrl(null);
@@ -87,442 +131,721 @@ export default function LandingPage() {
 
 	useEffect(() => {
 		AOS.init({
-			duration: 900,
+			duration: 800,
 			easing: 'ease-out-cubic',
 			once: true,
-			offset: 80,
+			offset: 60,
 		});
 	}, []);
 
 	return (
-		<div className="relative overflow-hidden">
-			<div className="pointer-events-none absolute inset-0 -z-10">
-				<div className="absolute -left-20 top-16 h-72 w-72 rounded-full bg-[#00FF41]/10 blur-3xl motion-float-slow" />
-				<div className="absolute -right-24 top-40 h-80 w-80 rounded-full bg-[#00D4FF]/10 blur-3xl motion-float" />
-				<div className="absolute left-1/2 top-0 h-80 w-[32rem] -translate-x-1/2 bg-gradient-to-b from-[#00D4FF]/15 to-transparent blur-3xl motion-pulse-glow" />
-				<div className="absolute left-1/2 top-56 h-64 w-64 -translate-x-1/2 rounded-full border border-[#00D4FF]/30 motion-orbit" />
-			</div>
+		<div className="relative min-h-screen text-slate-100 selection:bg-[#00F59B]/20 selection:text-[#00F59B]">
+			{/* Interactive 3D Cyber Canvas Background */}
+			<CyberCanvasBackground />
 
-			<header className="sticky top-0 z-50 border-b border-white/10 bg-[#0B0E11]/80 backdrop-blur-xl">
-				<nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4 md:px-8">
-					<div className="flex items-center gap-3">
-						<div className="relative h-9 w-9 overflow-hidden rounded-xl border border-white/20 bg-white/5 shadow-[0_0_30px_rgba(0,212,255,0.25)]">
-							<img src={`${import.meta.env.BASE_URL}/signal-forge-logo.png`} alt="Signal Forge Pro logo" className="h-full w-full object-cover motion-float" />
+			{/* Sticky Futuristic Navigation Header */}
+			<header className="sticky top-0 z-50 border-b border-white/10 bg-[#050811]/85 backdrop-blur-xl transition-all">
+				<nav className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
+					{/* Dual Logo Branding */}
+					<a href="#" className="flex items-center gap-3 group">
+						<div className="relative h-10 w-10 overflow-hidden rounded-xl border border-white/20 bg-gradient-to-br from-[#00F59B]/20 to-[#00D4FF]/20 p-1 shadow-[0_0_25px_rgba(0,245,155,0.35)] transition-transform duration-300 group-hover:scale-105">
+							<img
+								src={resolveUrl('/signal-forge-logo.png')}
+								alt="Signal Forge Pro"
+								className="h-full w-full object-cover"
+							/>
 						</div>
-						<p className="text-sm font-semibold tracking-wide text-white md:text-base">Signal Forge Pro</p>
-					</div>
-					<a
-						href="#download"
-						className="inline-flex items-center gap-2 rounded-2xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 px-4 py-2 text-sm font-medium text-[#7CEBFF] transition hover:border-[#00D4FF] hover:bg-[#00D4FF]/20"
-					>
-						<Download size={16} />
-						Download
+						<div className="flex flex-col">
+							<div className="flex items-center gap-2">
+								<span className="font-display font-extrabold tracking-tight text-white text-base md:text-lg">
+									SIGNAL FORGE <span className="text-[#00F59B]">PRO</span>
+								</span>
+								<span className="rounded bg-[#A855F7]/25 px-1.5 py-0.5 text-[9px] font-bold text-[#D8B4FE] border border-[#A855F7]/40">
+									+ GROK DESK
+								</span>
+							</div>
+							<span className="text-[10px] tracking-wider text-slate-400 font-mono-numbers">
+								LOCAL-FIRST QUANTUM SUITE
+							</span>
+						</div>
 					</a>
+
+					{/* Navigation Links */}
+					<div className="hidden lg:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-slate-300">
+						<a href="#apps" className="transition hover:text-[#00F59B]">
+							Apps Suite (3)
+						</a>
+						<a href="#terminal" className="transition hover:text-[#00D4FF]">
+							Live Terminal
+						</a>
+						<a href="#grok" className="transition hover:text-[#A855F7] flex items-center gap-1">
+							<Sparkles size={13} className="text-[#A855F7]" />
+							Grok AI Desk
+						</a>
+						<a href="#ecosystem" className="transition hover:text-white">
+							Ecosystem
+						</a>
+						<a href="#licensing" className="transition hover:text-white">
+							Hardware License
+						</a>
+					</div>
+
+					{/* Action Buttons */}
+					<div className="flex items-center gap-3">
+						<a
+							href={membershipFormUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white"
+						>
+							<FileBadge2 size={14} className="text-[#00D4FF]" />
+							License Form
+						</a>
+						<a
+							href="#apps"
+							className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00F59B] to-[#00D4FF] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#050811] shadow-[0_0_20px_rgba(0,245,155,0.4)] transition hover:brightness-110 active:scale-95"
+						>
+							<Download size={14} />
+							Get Apps
+						</a>
+					</div>
 				</nav>
 			</header>
 
-			<main className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-5 pb-16 pt-14 md:px-8 md:pt-20">
-				<section className="grid items-center gap-10 lg:grid-cols-2">
-					<div data-aos="fade-up" className="space-y-6">
-						<div className="inline-flex items-center gap-2 rounded-full border border-[#00FF41]/40 bg-[#00FF41]/10 px-3 py-1 text-xs font-medium text-[#86FFAB]">
-							<BadgeCheck size={14} />
-							Local-First Trading Ecosystem
-						</div>
-						<h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
-							Precision Trading. <span className="text-[#00D4FF]">Local Control.</span>
-						</h1>
-						<p className="max-w-xl text-base leading-relaxed text-slate-300 md:text-lg">
-							Experience the Signal Forge Pro ecosystem. Desktop and Mobile apps designed for speed, privacy, and local-first execution.
-						</p>
-						<div id="download" className="flex flex-col gap-3 pt-2 sm:flex-row">
-							<button
-								type="button"
-								onClick={() =>
-									openWaiver(
-										appLinks.find((app) => app.platform === 'Windows')?.href ?? '#',
-										'Signal Forge Pro Desktop (Windows)',
-									)
-								}
-								className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#00FF41] px-5 py-3 text-sm font-semibold text-[#051006] transition hover:brightness-110"
-							>
-								<MonitorSmartphone size={18} />
-								Download Windows App
-							</button>
-							<button
-								type="button"
-								onClick={() =>
-									openWaiver(
-										appLinks.find((app) => app.platform === 'Android')?.href ?? '#',
-										'Signal Forge Pro Mobile (Android)',
-									)
-								}
-								className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#00D4FF]/50 bg-[#00D4FF]/10 px-5 py-3 text-sm font-semibold text-[#7CEBFF] transition hover:bg-[#00D4FF]/20"
-							>
-								<Smartphone size={18} />
-								Download Android APK
-							</button>
-						</div>
-					</div>
+			{/* Streaming Live Market Ticker */}
+			<LiveMarketTicker />
 
-					<div data-aos="fade-up" data-aos-delay="180" className="grid gap-4">
-						<div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl">
-							<div className="mb-4 overflow-hidden rounded-xl border border-white/10 bg-black/30 p-2">
-								<div className="relative mx-auto flex w-fit items-center justify-center">
-									<div className="absolute h-24 w-24 rounded-full bg-[#00D4FF]/30 blur-2xl motion-pulse-glow" />
+			{/* Main Content Area */}
+			<main className="mx-auto flex w-full max-w-7xl flex-col gap-24 px-4 py-12 sm:px-6 lg:px-8">
+				{/* Hero Section */}
+				<section className="relative pt-6 md:pt-12">
+					<div className="grid items-center gap-12 lg:grid-cols-12">
+						{/* Left Column: Headlines & Call to Actions */}
+						<div data-aos="fade-up" className="lg:col-span-7 space-y-6">
+							{/* Futuristic Pill Badge */}
+							<div className="inline-flex items-center gap-2.5 rounded-full border border-[#00F59B]/40 bg-[#00F59B]/10 px-4 py-1.5 text-xs font-semibold text-[#00F59B] shadow-[0_0_20px_rgba(0,245,155,0.2)]">
+								<span className="relative flex h-2 w-2">
+									<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F59B] opacity-75" />
+									<span className="relative inline-flex h-2 w-2 rounded-full bg-[#00F59B]" />
+								</span>
+								<span className="font-mono-numbers">NEXT-GEN 3-APP QUANT TRADING ECOSYSTEM</span>
+							</div>
+
+							<h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.1]">
+								Trade from a{' '}
+								<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F59B] via-[#00D4FF] to-[#A855F7] animate-pulse">
+									Different World.
+								</span>{' '}
+								Pure Local Power.
+							</h1>
+
+							<p className="max-w-2xl text-base sm:text-lg leading-relaxed text-slate-300">
+								Step beyond traditional cloud latency. Deploy the triad of institutional trading tools:
+								<strong className="text-white"> Signal Forge Pro Desktop</strong>, the revolutionary{' '}
+								<strong className="text-[#D8B4FE]">Grok Desk AI Workstation</strong>, and the ultra-fast{' '}
+								<strong className="text-[#7CEBFF]">Signal Forge Pro Mobile</strong> node.
+							</p>
+
+							{/* Key Hero Metrics Bar */}
+							<div className="grid grid-cols-3 gap-3 pt-2">
+								<div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 backdrop-blur-md">
+									<p className="text-[11px] font-mono-numbers text-slate-400 uppercase">Avg Latency</p>
+									<p className="text-xl sm:text-2xl font-black text-[#00F59B] font-display">&lt; 1.8ms</p>
+									<p className="text-[10px] text-slate-400">Zero Cloud Hops</p>
+								</div>
+								<div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 backdrop-blur-md">
+									<p className="text-[11px] font-mono-numbers text-slate-400 uppercase">AI Win Ratio</p>
+									<p className="text-xl sm:text-2xl font-black text-[#00D4FF] font-display">89.6%</p>
+									<p className="text-[10px] text-slate-400">Grok Neural Core</p>
+								</div>
+								<div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 backdrop-blur-md">
+									<p className="text-[11px] font-mono-numbers text-slate-400 uppercase">Data Privacy</p>
+									<p className="text-xl sm:text-2xl font-black text-[#A855F7] font-display">100%</p>
+									<p className="text-[10px] text-slate-400">Hardware Locked</p>
+								</div>
+							</div>
+
+							{/* Action Buttons */}
+							<div className="flex flex-wrap items-center gap-4 pt-4">
+								<a
+									href="#apps"
+									className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#00F59B] to-[#00D4FF] px-6 py-4 text-sm font-bold uppercase tracking-wider text-[#050811] shadow-[0_0_30px_rgba(0,245,155,0.45)] transition hover:brightness-110 active:scale-95"
+								>
+									<Download size={18} />
+									Download 3 Apps
+								</a>
+								<a
+									href="#terminal"
+									className="inline-flex items-center justify-center gap-2.5 rounded-2xl border border-[#A855F7]/50 bg-[#A855F7]/10 px-6 py-4 text-sm font-bold uppercase tracking-wider text-[#D8B4FE] shadow-[0_0_25px_rgba(168,85,247,0.25)] transition hover:bg-[#A855F7]/20"
+								>
+									<Sparkles size={18} />
+									Try Live Terminal
+								</a>
+							</div>
+						</div>
+
+						{/* Right Column: 3D Holographic Trading Visual */}
+						<div data-aos="fade-up" data-aos-delay="200" className="lg:col-span-5 relative">
+							{/* Glowing Aura Ring */}
+							<div className="pointer-events-none absolute -inset-4 rounded-3xl bg-gradient-to-r from-[#00F59B]/20 via-[#00D4FF]/20 to-[#A855F7]/30 blur-2xl opacity-70 animate-pulse-glow" />
+
+							<div className="relative rounded-3xl border border-white/20 bg-gradient-to-b from-white/10 to-black/60 p-3 shadow-2xl backdrop-blur-2xl">
+								<div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/15">
 									<img
-										src={`${import.meta.env.BASE_URL}/signal-forge-logo.png`}
-										alt="Signal Forge Pro symbol"
-										className="relative z-10 h-20 w-20 rounded-xl object-cover shadow-[0_0_35px_rgba(0,212,255,0.55)] motion-float"
+										src={resolveUrl('/images/hero-trading-3d.jpg')}
+										alt="3D Holographic Trading Command Station"
+										className="h-full w-full object-cover"
 									/>
-								</div>
-							</div>
-							<div className="h-56 rounded-xl border border-white/20 bg-gradient-to-br from-[#0d2230] via-[#0f1b2c] to-[#083323] p-4">
-								<div className="mb-3 flex items-center justify-between text-xs text-slate-300">
-									<span className="inline-flex items-center gap-1"><Bot size={12} /> Aura Signal Stream</span>
-									<span className="rounded-full border border-[#00FF41]/30 bg-[#00FF41]/10 px-2 py-1 text-[#93ffb6]">Live</span>
-								</div>
-								<div className="grid h-[calc(100%-26px)] grid-cols-3 gap-3">
-									<div className="rounded-lg border border-white/10 bg-white/5 p-3">
-										<p className="text-[11px] text-slate-400">Win Ratio</p>
-										<p className="mt-1 text-lg font-semibold text-[#00FF41]">87.4%</p>
-									</div>
-									<div className="rounded-lg border border-white/10 bg-white/5 p-3">
-										<p className="text-[11px] text-slate-400">Signals</p>
-										<p className="mt-1 text-lg font-semibold text-white">142</p>
-									</div>
-									<div className="rounded-lg border border-white/10 bg-white/5 p-3">
-										<p className="text-[11px] text-slate-400">Latency</p>
-										<p className="mt-1 text-lg font-semibold text-[#7CEBFF]">8ms</p>
-									</div>
-									<div className="col-span-3 rounded-lg border border-white/10 bg-black/20 p-3">
-										<p className="text-[11px] text-slate-400">Current Strategy</p>
-										<p className="mt-1 text-sm text-white">EUR/USD Momentum Pulse with local execution routing</p>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl">
-							<div className="h-40 rounded-xl border border-white/20 bg-gradient-to-r from-[#0c2e1d] to-[#0f2635] p-4">
-								<p className="text-xs text-slate-300">Mobile Command Panel</p>
-								<div className="mt-3 grid grid-cols-3 gap-3">
-									<div className="rounded-lg border border-white/10 bg-black/20 p-2 text-center text-[11px] text-[#93ffb6]">BUY</div>
-									<div className="rounded-lg border border-white/10 bg-black/20 p-2 text-center text-[11px] text-[#7CEBFF]">HOLD</div>
-									<div className="rounded-lg border border-white/10 bg-black/20 p-2 text-center text-[11px] text-rose-300">SELL</div>
-								</div>
-								<p className="mt-3 text-xs text-slate-400">Synced with desktop engine over private local channel</p>
-							</div>
-						</div>
-					</div>
-				</section>
+									<div className="absolute inset-0 bg-gradient-to-t from-[#050811] via-transparent to-transparent opacity-60" />
 
-				<section data-aos="fade-up" className="space-y-5 rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl md:p-8">
-					<div className="flex flex-wrap items-center justify-between gap-3">
-						<div>
-							<p className="text-xs uppercase tracking-[0.2em] text-[#00D4FF]">Interactive Downloads</p>
-							<h2 className="mt-2 text-2xl font-semibold text-white md:text-3xl">Choose platform and deploy in minutes</h2>
-						</div>
-						<div className="inline-flex rounded-2xl border border-white/10 bg-black/20 p-1">
-							<button
-								onClick={() => setActivePlatform('Windows')}
-								className={`rounded-xl px-4 py-2 text-sm transition ${activePlatform === 'Windows' ? 'bg-[#00FF41] text-[#051006]' : 'text-slate-300 hover:text-white'}`}
-							>
-								Windows
-							</button>
-							<button
-								onClick={() => setActivePlatform('Android')}
-								className={`rounded-xl px-4 py-2 text-sm transition ${activePlatform === 'Android' ? 'bg-[#00D4FF]/20 text-[#7CEBFF]' : 'text-slate-300 hover:text-white'}`}
-							>
-								Android
-							</button>
-						</div>
-					</div>
-
-					{/* Conditionally Render Android Beta Warning Card */}
-					{activePlatform === 'Android' && (
-						<div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 backdrop-blur-xl animate-fadeIn">
-							<div className="flex items-start gap-3">
-								<div className="mt-0.5 text-amber-400 shrink-0">
-									<AlertTriangle size={18} />
-								</div>
-								<div className="space-y-1">
-									<h4 className="text-sm font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1">
-										Android Mobile Beta Execution Warning
-									</h4>
-									<p className="text-xs leading-relaxed text-slate-300">
-										The mobile application is currently in <span className="text-amber-400 font-medium">BETA</span>. 
-										Android operating systems aggressively put background or minimized applications to sleep to preserve battery runtime resources.
-									</p>
-									<div className="mt-2 rounded-lg bg-black/40 p-2.5 text-xs text-slate-300 border border-white/5">
-										<p className="font-medium text-[#7CEBFF] mb-1">💡 Critical Execution Rule:</p>
-										To ensure successful automated trade execution directly to your <span className="text-white font-medium">Binance Account</span>, 
-										keep the app <span className="text-emerald-400 font-semibold underline">MAXIMIZED and actively displayed in the foreground</span>. 
-										Monitor your incoming Telegram signals closely and make sure the interface remains in front of you while trading.
-									</div>
-								</div>
-							</div>
-						</div>
-					)}
-
-					<div className="grid gap-4 md:grid-cols-2">
-						{filteredApps.map((app) => (
-							<article key={app.name} className="rounded-2xl border border-white/10 bg-black/20 p-5">
-								<div className="flex items-start justify-between gap-3">
-									<div>
-										<p className="text-base font-semibold text-white">{app.name}</p>
-										<p className="mt-1 text-sm text-slate-400">
-											{app.version} • {app.size}
+									{/* Floating Live Telemetry Overlay Card */}
+									<div className="absolute bottom-3 left-3 right-3 rounded-xl border border-white/15 bg-black/75 p-3 backdrop-blur-md font-mono-numbers">
+										<div className="flex items-center justify-between text-xs mb-1.5">
+											<span className="flex items-center gap-1.5 text-white font-semibold">
+												<span className="h-2 w-2 rounded-full bg-[#00F59B] animate-ping" />
+												GROK DEEP REASONING
+											</span>
+											<span className="text-[#00F59B] font-bold">+18.4% APY</span>
+										</div>
+										<p className="text-[11px] text-slate-300 truncate">
+											Real-time orderbook depth scanner analyzing 18 pairs concurrently.
 										</p>
 									</div>
-									{app.recommended ? (
-										<span className="rounded-full border border-[#00FF41]/30 bg-[#00FF41]/10 px-2 py-1 text-xs text-[#93ffb6]">Recommended</span>
-									) : null}
 								</div>
-								<div className="mt-4 flex items-center justify-between">
-									<span className="inline-flex items-center gap-1 text-xs text-slate-400">
-										<GitBranch size={13} /> Latest Build
-									</span>
-									<button
-										type="button"
-										onClick={() => openWaiver(app.href, `${app.name} (${app.platform})`)}
-										className="inline-flex items-center gap-2 rounded-xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 px-4 py-2 text-sm text-[#7CEBFF] transition hover:bg-[#00D4FF]/20"
-									>
-										Download <ArrowRight size={14} />
-									</button>
+
+								{/* Mini App Thumbnails Row */}
+								<div className="mt-3 grid grid-cols-3 gap-2">
+									<div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2">
+										<div className="h-7 w-7 rounded-lg overflow-hidden shrink-0 border border-white/10">
+											<img src={resolveUrl('/signal-forge-logo.png')} alt="" className="h-full w-full object-cover" />
+										</div>
+										<div className="truncate">
+											<p className="text-[10px] font-bold text-white leading-tight truncate">Forge Desktop</p>
+											<p className="text-[9px] text-[#00F59B]">v2.4.1 Win</p>
+										</div>
+									</div>
+
+									<div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2">
+										<div className="h-7 w-7 rounded-lg overflow-hidden shrink-0 border border-[#A855F7]/40">
+											<img src={resolveUrl('/images/grok-desk-logo.jpg')} alt="" className="h-full w-full object-cover" />
+										</div>
+										<div className="truncate">
+											<p className="text-[10px] font-bold text-white leading-tight truncate">Grok Desk</p>
+											<p className="text-[9px] text-[#A855F7]">v1.4.0 Win</p>
+										</div>
+									</div>
+
+									<div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2">
+										<div className="h-7 w-7 rounded-lg overflow-hidden shrink-0 border border-[#00D4FF]/40">
+											<img src={resolveUrl('/signal-forge-logo.png')} alt="" className="h-full w-full object-cover" />
+										</div>
+										<div className="truncate">
+											<p className="text-[10px] font-bold text-white leading-tight truncate">Forge Mobile</p>
+											<p className="text-[9px] text-[#00D4FF]">v2.4.1 APK</p>
+										</div>
+									</div>
 								</div>
-							</article>
-						))}
-						<div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#00D4FF]/10 to-[#00FF41]/10 p-5">
-							<p className="inline-flex items-center gap-2 text-sm text-white">
-								<Rocket size={15} />
-								One-Click Setup Flow
-							</p>
-							<p className="mt-2 text-sm text-slate-300">
-								Download your app package, install, activate your license, and start trading with local-first execution in minutes.
-							</p>
-							<div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
-								<div className="rounded-lg border border-white/15 bg-black/20 p-2 text-slate-300">Download</div>
-								<div className="rounded-lg border border-white/15 bg-black/20 p-2 text-slate-300">Install</div>
-								<div className="rounded-lg border border-white/15 bg-black/20 p-2 text-slate-300">Activate</div>
 							</div>
 						</div>
 					</div>
 				</section>
 
-				<section data-aos="fade-up" className="space-y-6">
-					<div>
-						<p className="text-xs uppercase tracking-[0.2em] text-[#00D4FF]">The Ecosystem</p>
-						<h2 className="mt-2 text-2xl font-semibold text-white md:text-3xl">Built as one coordinated signal stack</h2>
+				{/* Interactive Live Terminal Simulator Section */}
+				<section id="terminal" data-aos="fade-up" className="space-y-6 pt-6">
+					<div className="text-center max-w-3xl mx-auto space-y-3">
+						<p className="text-xs uppercase tracking-[0.25em] text-[#00D4FF] font-mono-numbers">
+							INTERACTIVE QUANTUM WORKBENCH
+						</p>
+						<h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white">
+							Experience Real-Time Autonomous Signal Routing
+						</h2>
+						<p className="text-sm sm:text-base text-slate-300">
+							Switch between engines, test live liquidity scans, and watch simulated low-latency trade dispatches in action.
+						</p>
 					</div>
-					<div className="grid gap-4 md:grid-cols-3">
-						{ecosystemCards.map((card) => (
-							<article
-								key={card.name}
-								className={`rounded-2xl border border-white/10 bg-gradient-to-br ${card.accent} p-5 backdrop-blur-xl`}
-							>
-								<h3 className="text-lg font-semibold text-white">{card.name}</h3>
-								<p className="mt-3 text-sm leading-relaxed text-slate-300">{card.description}</p>
-							</article>
-						))}
-					</div>
+
+					<InteractiveTerminalSimulator />
 				</section>
 
-				<section data-aos="fade-up" className="space-y-6">
-					<div>
-						<p className="text-xs uppercase tracking-[0.2em] text-[#00FF41]">Local-First Features</p>
-						<h2 className="mt-2 text-2xl font-semibold text-white md:text-3xl">Engineered for control and reliability</h2>
-					</div>
-					<div className="grid gap-4 md:grid-cols-3">
-						{features.map((feature) => (
-							<div key={feature.title} className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
-								<div className="inline-flex rounded-xl border border-white/15 bg-white/5 p-2 text-[#00D4FF]">
-									<feature.icon size={18} />
-								</div>
-								<h3 className="mt-4 text-lg font-semibold text-white">{feature.title}</h3>
-								<p className="mt-2 text-sm text-slate-300">{feature.description}</p>
-							</div>
-						))}
-					</div>
-				</section>
-
-				<section
-					data-aos="fade-up"
-					className="relative overflow-hidden rounded-2xl border border-[#00D4FF]/30 bg-gradient-to-br from-[#00D4FF]/12 via-white/[0.04] to-[#00FF41]/10 p-6 shadow-[0_0_40px_rgba(0,212,255,0.12)] backdrop-blur-xl md:p-8"
-				>
-					<div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#00D4FF]/20 blur-3xl" />
-					<div className="pointer-events-none absolute -bottom-16 -left-10 h-44 w-44 rounded-full bg-[#00FF41]/15 blur-3xl" />
-					<div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-						<div className="max-w-2xl space-y-3">
-							<p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#7CEBFF]">
-								<FileBadge2 size={14} />
-								Membership & Licensing
-							</p>
-							<h2 className="text-2xl font-semibold text-white md:text-3xl">Apply for Membership Registration and License Access</h2>
-							<p className="text-sm leading-relaxed text-slate-300 md:text-base">
-								Complete the official application to register your membership and request your software license. Our team reviews submissions
-								promptly to activate verified accounts and streamline onboarding.
-							</p>
-						</div>
-						<button
-							type="button"
-							onClick={() => window.open(membershipFormUrl, '_blank', 'noopener,noreferrer')}
-							className="inline-flex items-center justify-center gap-2 self-start rounded-2xl border border-[#00D4FF]/50 bg-[#00D4FF]/15 px-5 py-3 text-sm font-semibold text-[#9DEFFF] transition hover:border-[#00D4FF] hover:bg-[#00D4FF]/25 md:self-center"
-						>
-							Apply Now
-							<ArrowRight size={15} />
-						</button>
-					</div>
-				</section>
-
-				<section data-aos="fade-up" className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl md:p-8">
-					<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+				{/* 3 Apps Showcase & Download Hub */}
+				<section id="apps" data-aos="fade-up" className="space-y-8 pt-6">
+					<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 border-b border-white/10 pb-6">
 						<div>
-							<p className="text-xs uppercase tracking-[0.2em] text-[#00D4FF]">Technical Specs</p>
-							<h2 className="mt-2 text-2xl font-semibold text-white md:text-3xl">Activation tied to your hardware footprint</h2>
+							<p className="text-xs uppercase tracking-[0.25em] text-[#00F59B] font-mono-numbers">
+								OFFICIAL DISTRIBUTION SUITE
+							</p>
+							<h2 className="font-display mt-2 text-3xl sm:text-4xl font-extrabold text-white">
+								Select Your Platform. Deploy Local Control.
+							</h2>
+							<p className="mt-2 text-sm text-slate-300">
+								Choose from our three dedicated trading packages. All setups include on-device encrypted activation.
+							</p>
 						</div>
-						<Cpu className="text-[#00D4FF]" />
+
+						{/* Platform Filter Buttons */}
+						<div className="inline-flex rounded-2xl border border-white/15 bg-black/40 p-1 self-start sm:self-auto">
+							<button
+								type="button"
+								onClick={() => setActiveFilter('All')}
+								className={`rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider transition ${
+									activeFilter === 'All'
+										? 'bg-gradient-to-r from-[#00F59B] to-[#00D4FF] text-[#050811] shadow-md'
+										: 'text-slate-300 hover:text-white'
+								}`}
+							>
+								All Apps (3)
+							</button>
+							<button
+								type="button"
+								onClick={() => setActiveFilter('Windows')}
+								className={`rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider transition ${
+									activeFilter === 'Windows'
+										? 'bg-[#00F59B]/20 text-[#00F59B] border border-[#00F59B]/50'
+										: 'text-slate-300 hover:text-white'
+								}`}
+							>
+								Windows (2)
+							</button>
+							<button
+								type="button"
+								onClick={() => setActiveFilter('Android')}
+								className={`rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider transition ${
+									activeFilter === 'Android'
+										? 'bg-[#00D4FF]/20 text-[#00D4FF] border border-[#00D4FF]/50'
+										: 'text-slate-300 hover:text-white'
+								}`}
+							>
+								Android (1)
+							</button>
+						</div>
 					</div>
-					<div className="mt-6 grid gap-4 md:grid-cols-2">
-						<div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-							<h3 className="font-semibold text-white">Runtime Environments</h3>
-							<p className="mt-2 text-sm text-slate-300">Desktop (Windows) and Android APK deployments with a unified local execution model.</p>
+
+					{/* 3D App Cards Grid */}
+					<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+						{filteredApps.map((app) => (
+							<AppCard3D
+								key={app.id}
+								app={app}
+								onDownloadClick={openWaiver}
+								baseUrl={baseUrl}
+							/>
+						))}
+					</div>
+
+					{/* 3-Step Quick Deployment Flow Bar */}
+					<div className="rounded-3xl border border-white/10 bg-gradient-to-r from-white/[0.04] via-black/40 to-white/[0.02] p-6 backdrop-blur-xl">
+						<div className="grid gap-6 md:grid-cols-3">
+							<div className="flex items-start gap-4">
+								<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#00F59B]/15 text-[#00F59B] font-display font-bold text-lg border border-[#00F59B]/30">
+									1
+								</div>
+								<div>
+									<h4 className="font-semibold text-white text-sm">Download & Install</h4>
+									<p className="mt-1 text-xs text-slate-400">
+										Obtain the signed installer or APK directly from verified release builds.
+									</p>
+								</div>
+							</div>
+
+							<div className="flex items-start gap-4">
+								<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#00D4FF]/15 text-[#00D4FF] font-display font-bold text-lg border border-[#00D4FF]/30">
+									2
+								</div>
+								<div>
+									<h4 className="font-semibold text-white text-sm">Bind Hardware License</h4>
+									<p className="mt-1 text-xs text-slate-400">
+										Submit your Machine ID to lock activation exclusively to your physical rig.
+									</p>
+								</div>
+							</div>
+
+							<div className="flex items-start gap-4">
+								<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#A855F7]/15 text-[#A855F7] font-display font-bold text-lg border border-[#A855F7]/30">
+									3
+								</div>
+								<div>
+									<h4 className="font-semibold text-white text-sm">Autonomous Execution</h4>
+									<p className="mt-1 text-xs text-slate-400">
+										Route sub-millisecond orders through Binance or your favored exchange API.
+									</p>
+								</div>
+							</div>
 						</div>
-						<div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-							<h3 className="font-semibold text-white">Local Machine ID Activation</h3>
-							<p className="mt-2 text-sm text-slate-300">
-								Each license is generated against a machine fingerprint, enabling secure activation and strict account-device binding.
+					</div>
+				</section>
+
+				{/* Spotlight on Grok Desk Section */}
+				<section id="grok" data-aos="fade-up" className="relative overflow-hidden rounded-3xl border border-[#A855F7]/30 bg-gradient-to-br from-[#A855F7]/15 via-[#090e1e]/90 to-[#EC4899]/10 p-6 sm:p-10 shadow-[0_0_50px_rgba(168,85,247,0.2)] backdrop-blur-2xl">
+					<div className="grid items-center gap-10 lg:grid-cols-12">
+						<div className="lg:col-span-7 space-y-5">
+							<div className="inline-flex items-center gap-2 rounded-full border border-[#A855F7]/40 bg-[#A855F7]/20 px-3.5 py-1 text-xs font-semibold text-[#D8B4FE]">
+								<Sparkles size={14} />
+								FEATURE SPOTLIGHT: GROK DESK WORKSTATION
+							</div>
+
+							<h2 className="font-display text-3xl sm:text-4xl font-black text-white leading-tight">
+								The Next-Generation <span className="text-[#A855F7]">Neural AI Trading Cockpit</span>
+							</h2>
+
+							<p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+								Engineered for quantitative traders who demand predictive reasoning over simple lagging indicators.
+								Grok Desk decodes market microstructures, orderbook skew, whale absorption footprints, and cross-market narrative sentiment.
+							</p>
+
+							<div className="grid sm:grid-cols-2 gap-3 pt-2">
+								<div className="rounded-xl border border-white/10 bg-black/40 p-3.5">
+									<h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+										<Bot size={15} className="text-[#A855F7]" /> Multi-Agent Market Reasoning
+									</h4>
+									<p className="mt-1.5 text-xs text-slate-400">
+										Continuous LLM analysis assessing news shocks, liquidity gaps, and whale accumulations.
+									</p>
+								</div>
+
+								<div className="rounded-xl border border-white/10 bg-black/40 p-3.5">
+									<h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+										<Layers size={15} className="text-[#00F59B]" /> 3D Liquidity Heatmaps
+									</h4>
+									<p className="mt-1.5 text-xs text-slate-400">
+										Visualize depth clusters and order block targets before volatility expansion starts.
+									</p>
+								</div>
+							</div>
+
+							<div className="pt-2">
+								<button
+									type="button"
+									onClick={() =>
+										openWaiver(
+											appLinks.find((app) => app.id === 'grok-desk')?.href ?? '#',
+											'Grok Desk (Windows Desktop)',
+										)
+									}
+									className="inline-flex items-center gap-2 rounded-2xl bg-[#A855F7] px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-[0_0_25px_rgba(168,85,247,0.5)] transition hover:brightness-110 active:scale-95"
+								>
+									<Download size={16} />
+									Download Grok Desk v1.4.0 (Windows)
+								</button>
+							</div>
+						</div>
+
+						<div className="lg:col-span-5 relative">
+							<div className="overflow-hidden rounded-2xl border border-[#A855F7]/40 shadow-2xl">
+								<img
+									src={resolveUrl('/images/grok-desk-3d.jpg')}
+									alt="Grok Desk AI Workstation"
+									className="h-full w-full object-cover"
+								/>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				{/* The Coordinated Ecosystem Stack */}
+				<section id="ecosystem" data-aos="fade-up" className="space-y-8">
+					<div className="text-center max-w-3xl mx-auto space-y-2">
+						<p className="text-xs uppercase tracking-[0.25em] text-[#00D4FF] font-mono-numbers">
+							COORDINATED SIGNAL INFRASTRUCTURE
+						</p>
+						<h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white">
+							Built as One Interconnected Execution Stack
+						</h2>
+						<p className="text-sm text-slate-300">
+							Every module communicates over local, low-latency pipes to give you an uncompromising institutional edge.
+						</p>
+					</div>
+
+					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+						{ecosystemCards.map((card) => {
+							const Icon = card.icon;
+							return (
+								<article
+									key={card.name}
+									className={`rounded-3xl border ${card.border} bg-gradient-to-b ${card.accent} p-6 backdrop-blur-xl shadow-xl transition-transform hover:-translate-y-1.5`}
+								>
+									<div className="flex items-center justify-between">
+										<div
+											className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/5"
+											style={{ color: card.iconColor }}
+										>
+											<Icon size={24} />
+										</div>
+										<span
+											className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border"
+											style={{
+												backgroundColor: `${card.iconColor}15`,
+												borderColor: `${card.iconColor}40`,
+												color: card.iconColor,
+											}}
+										>
+											{card.tag}
+										</span>
+									</div>
+
+									<h3 className="mt-5 font-display text-lg font-bold text-white">{card.name}</h3>
+									<p className="mt-2 text-xs leading-relaxed text-slate-300">{card.description}</p>
+								</article>
+							);
+						})}
+					</div>
+				</section>
+
+				{/* Local-First & Technical Advantages */}
+				<section data-aos="fade-up" className="space-y-8">
+					<div className="text-center max-w-3xl mx-auto space-y-2">
+						<p className="text-xs uppercase tracking-[0.25em] text-[#00F59B] font-mono-numbers">
+							SOVEREIGN ARCHITECTURE
+						</p>
+						<h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white">
+							Engineered for Speed, Reliability, and Discretion
+						</h2>
+					</div>
+
+					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+						{featureHighlights.map((feature) => {
+							const Icon = feature.icon;
+							return (
+								<div
+									key={feature.title}
+									className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl hover:border-white/20 transition-all"
+								>
+									<div
+										className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/5"
+										style={{ color: feature.accent }}
+									>
+										<Icon size={20} />
+									</div>
+									<h3 className="mt-4 font-display text-base font-bold text-white">{feature.title}</h3>
+									<p className="mt-2 text-xs leading-relaxed text-slate-300">{feature.description}</p>
+								</div>
+							);
+						})}
+					</div>
+				</section>
+
+				{/* Hardware Licensing & Application Banner */}
+				<section
+					id="licensing"
+					data-aos="fade-up"
+					className="relative overflow-hidden rounded-3xl border border-[#00D4FF]/30 bg-gradient-to-r from-[#00D4FF]/15 via-[#071326] to-[#00F59B]/10 p-8 sm:p-12 shadow-[0_0_50px_rgba(0,212,255,0.15)] backdrop-blur-2xl"
+				>
+					<div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#00D4FF]/20 blur-3xl" />
+					<div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[#00F59B]/15 blur-3xl" />
+
+					<div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+						<div className="max-w-2xl space-y-4">
+							<div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#7CEBFF] font-mono-numbers">
+								<FileBadge2 size={16} />
+								MEMBERSHIP & LICENSE AUTHORIZATION
+							</div>
+							<h2 className="font-display text-2xl sm:text-4xl font-extrabold text-white leading-tight">
+								Apply for Official Membership & Hardware License Access
+							</h2>
+							<p className="text-sm sm:text-base leading-relaxed text-slate-300">
+								Each Signal Forge Pro and Grok Desk deployment operates with on-device cryptographic activation tied
+								to your hardware ID. Complete our official registration form to submit your machine fingerprint and obtain
+								your verified license key.
+							</p>
+
+							<div className="flex flex-wrap items-center gap-6 pt-2 text-xs text-slate-300 font-mono-numbers">
+								<span className="flex items-center gap-1.5">
+									<CheckCircle2 size={14} className="text-[#00F59B]" /> Instant Verification Queue
+								</span>
+								<span className="flex items-center gap-1.5">
+									<CheckCircle2 size={14} className="text-[#00D4FF]" /> Dedicated Onboarding Support
+								</span>
+								<span className="flex items-center gap-1.5">
+									<CheckCircle2 size={14} className="text-[#A855F7]" /> Lifetime Local Access
+								</span>
+							</div>
+						</div>
+
+						<div className="flex flex-col gap-3 shrink-0">
+							<a
+								href={membershipFormUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#00D4FF] to-[#00F59B] px-8 py-4 text-sm font-bold uppercase tracking-wider text-[#050811] shadow-[0_0_25px_rgba(0,212,255,0.4)] transition hover:brightness-110 active:scale-95"
+							>
+								Submit Membership Application
+								<ArrowRight size={16} />
+							</a>
+							<span className="text-center text-[11px] text-slate-400">
+								Official Google Forms Enrollment
+							</span>
+						</div>
+					</div>
+				</section>
+
+				{/* Technical Specs & Support Grid */}
+				<section data-aos="fade-up" className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-10 backdrop-blur-xl">
+					<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-6">
+						<div>
+							<p className="text-xs uppercase tracking-[0.25em] text-[#00D4FF] font-mono-numbers">
+								ENTERPRISE RUNTIME SPECIFICATIONS
+							</p>
+							<h2 className="font-display mt-1 text-2xl sm:text-3xl font-bold text-white">
+								Architecture, Security, and System Boundaries
+							</h2>
+						</div>
+						<Cpu className="text-[#00D4FF]" size={28} />
+					</div>
+
+					<div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+						<div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+							<h3 className="font-bold text-white text-sm">Supported Operating Systems</h3>
+							<p className="mt-2 text-xs leading-relaxed text-slate-300">
+								• <strong>Windows:</strong> 10 / 11 (64-bit architecture) for Signal Forge Pro & Grok Desk.<br />
+								• <strong>Android:</strong> 10.0+ (ARM64) standalone APK for mobile signal monitoring.
 							</p>
 						</div>
-						<div className="rounded-2xl border border-white/10 bg-black/20 p-5 md:col-span-2">
-							<h3 className="inline-flex items-center gap-2 font-semibold text-white">
+
+						<div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+							<h3 className="font-bold text-white text-sm">Hardware Fingerprint Model</h3>
+							<p className="mt-2 text-xs leading-relaxed text-slate-300">
+								Software activations generate a unique cryptographic hash from your local CPU and motherboard ID.
+								License keys are validated offline with zero data transmission back to central servers.
+							</p>
+						</div>
+
+						<div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+							<h3 className="font-bold text-white text-sm">Direct Support Channels</h3>
+							<p className="mt-2 text-xs leading-relaxed text-slate-300">
+								For setup queries, licensing verification, and custom strategy consulting:<br />
+								• Email: <a href="mailto:signalbotpro@gmail.com" className="text-[#00D4FF] hover:underline">signalbotpro@gmail.com</a><br />
+								• Telegram: <a href="https://t.me/SignalBotPr" target="_blank" rel="noreferrer" className="text-[#00F59B] hover:underline">@SignalBotPr</a>
+							</p>
+						</div>
+
+						<div className="rounded-2xl border border-white/10 bg-black/30 p-5 md:col-span-2 lg:col-span-3">
+							<h3 className="font-bold text-white text-sm flex items-center gap-2">
 								<Globe size={16} className="text-[#00D4FF]" />
-								Privacy, Security Warnings, and Setup Support
+								External Installation & Security Notice
 							</h3>
-							<p className="mt-2 text-sm text-slate-300">
-								Because these apps are installed outside official app stores, your system may show security warnings during download or installation.
-								You can proceed after verification. Signal Forge Pro is local-first: data stays on your device, and we do not collect personal trading data.
-							</p>
-							<p className="mt-3 text-sm text-slate-300">
-								For licensing and setup support, contact us at <a href="mailto:signalbotpro@gmail.com" className="text-[#7CEBFF] hover:text-white">signalbotpro@gmail.com</a> or Telegram <a href="https://t.me/SignalBotPr" target="_blank" rel="noreferrer" className="text-[#7CEBFF] hover:text-white">@SignalBotPr</a>.
+							<p className="mt-2 text-xs leading-relaxed text-slate-300">
+								Because Signal Forge Pro and Grok Desk are high-frequency autonomous trading applications distributed directly outside third-party consumer app stores, your operating system (Windows SmartScreen or Android Package Installer) may display publisher warnings. You can safely proceed by choosing “Run Anyway” or allowing installation from trusted sources. Data remains strictly on your machine.
 							</p>
 						</div>
 					</div>
 				</section>
 			</main>
 
-			<footer className="border-t border-white/10 py-8">
-				<div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 text-sm text-slate-400 md:flex-row md:items-center md:justify-between md:px-8">
-					<p>Built for Traders</p>
-					<div className="flex items-center gap-5">
-						<a href="#" className="transition hover:text-white">
-							Documentation
-						</a>
-						<a href="#" className="transition hover:text-white">
-							Support
-						</a>
-						<a href="#" className="inline-flex items-center gap-1 transition hover:text-[#00D4FF]">
-							Download <ArrowRight size={14} />
-						</a>
+			{/* Futuristic Footer */}
+			<footer className="mt-20 border-t border-white/10 bg-[#03060c] py-12">
+				<div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8">
+					<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+						<div className="flex items-center gap-3">
+							<div className="h-9 w-9 rounded-xl border border-white/20 bg-white/5 p-1">
+								<img src={resolveUrl('/signal-forge-logo.png')} alt="" className="h-full w-full object-cover" />
+							</div>
+							<div>
+								<p className="font-display font-bold text-white text-base">Signal Forge Pro & Grok Desk</p>
+								<p className="text-[11px] text-slate-400 font-mono-numbers">Next-Gen Local Algorithmic Trading Suite</p>
+							</div>
+						</div>
+
+						<div className="flex flex-wrap items-center gap-6 text-xs text-slate-400">
+							<a href="#apps" className="transition hover:text-white">Download Apps</a>
+							<a href="#terminal" className="transition hover:text-white">Terminal Simulator</a>
+							<a href="#grok" className="transition hover:text-white">Grok Desk AI</a>
+							<a href="#licensing" className="transition hover:text-white">Apply License</a>
+							<a href="https://t.me/SignalBotPr" target="_blank" rel="noreferrer" className="text-[#00D4FF] hover:underline">
+								Telegram Community
+							</a>
+						</div>
+					</div>
+
+					<div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+						<p>© 2026 Signal Forge Pro Ecosystem. All rights reserved. Sovereign Local Execution.</p>
+						<p className="text-[11px] text-slate-400 font-mono-numbers">Hardware Bound • Zero Cloud Telemetry</p>
 					</div>
 				</div>
 			</footer>
 
-			{isWaiverOpen ? (
-				<div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-					<div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/15 bg-[#0B0E11] p-6 shadow-2xl shadow-black/50 md:p-8">
-						<div className="flex items-start justify-between gap-4">
+			{/* Risk Disclosure & Liability Waiver Cyber Modal */}
+			{isWaiverOpen && (
+				<div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
+					<div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/20 bg-[#070b16] p-6 sm:p-8 shadow-[0_0_60px_rgba(0,212,255,0.25)]">
+						<div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
 							<div>
-								<p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#00D4FF]">
-									<AlertTriangle size={14} />
-									Mandatory User Agreement
+								<p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#00D4FF] font-mono-numbers">
+									<AlertTriangle size={14} className="text-[#00D4FF]" />
+									MANDATORY TRADING DISCLOSURE & WAIVER
 								</p>
-								<h3 className="mt-2 text-2xl font-semibold text-white">Signal Forge Pro Risk Disclosure & Liability Waiver</h3>
-								<p className="mt-2 text-sm text-slate-300">Applies to: {pendingDownloadLabel}</p>
+								<h3 className="mt-1 font-display text-2xl font-bold text-white">
+									Risk Disclosure & Liability Acceptance
+								</h3>
+								<p className="mt-1 text-xs text-slate-400">
+									Target Package: <span className="font-semibold text-white">{pendingDownloadLabel}</span>
+								</p>
 							</div>
 							<button
 								type="button"
 								onClick={() => setIsWaiverOpen(false)}
-								className="rounded-xl border border-white/15 bg-white/5 p-2 text-slate-300 transition hover:text-white"
-								aria-label="Close waiver"
+								className="rounded-xl border border-white/15 bg-white/5 p-2 text-slate-400 transition hover:bg-white/10 hover:text-white"
+								aria-label="Close modal"
 							>
-								<X size={16} />
+								<X size={18} />
 							</button>
 						</div>
 
-						<div className="mt-6 space-y-4 text-sm leading-relaxed text-slate-300">
+						{/* Disclaimer clauses */}
+						<div className="mt-6 space-y-4 text-xs sm:text-sm leading-relaxed text-slate-300 max-h-72 overflow-y-auto pr-2 bg-black/40 p-4 rounded-2xl border border-white/5">
 							<section>
-								<h4 className="font-semibold text-white">1) No Financial Advice</h4>
-								<p>
-									Signals, alerts, automation tools, and any related content delivered through Signal Forge Pro or associated channels (including Telegram)
-									are provided strictly for software utility, educational, and process-automation purposes. Nothing provided constitutes investment, legal,
-									tax, or financial advice, and Signal Forge Pro is not acting as a Registered Financial Advisor, broker-dealer, or fiduciary.
+								<h4 className="font-semibold text-white">1) No Financial or Investment Advice</h4>
+								<p className="mt-1 text-slate-400">
+									Signals, neural predictions, automation tools, and documentation provided via Signal Forge Pro and Grok Desk are delivered strictly for technological, educational, and computational utility. We do not act as registered broker-dealers, investment advisors, or fiduciaries.
 								</p>
 							</section>
+
 							<section>
-								<h4 className="font-semibold text-white">2) No Guarantee of Profit or Performance</h4>
-								<p>
-									Cryptocurrency and derivatives trading involve substantial risk of loss. Market conditions are volatile and unpredictable. Past performance,
-									backtests, historical data, and signal accuracy metrics are not guarantees of future performance. No representation or warranty is made that
-									any user will achieve profits or avoid losses.
+								<h4 className="font-semibold text-white">2) Extreme Market Volatility & Capital Risk</h4>
+								<p className="mt-1 text-slate-400">
+									Digital asset trading entails substantial risk of capital loss. Past algorithmic performance, backtest ratios, and simulated win rates do not guarantee future profitability. You trade exclusively at your own risk.
 								</p>
 							</section>
+
 							<section>
-								<h4 className="font-semibold text-white">3) Assumption of Risk and User Responsibility</h4>
-								<p>
-									By proceeding, you confirm that you trade exclusively with your own capital, at your sole discretion, and at your sole risk. You are fully
-									responsible for trade execution decisions, exchange selection, leverage settings, API permissions, and risk controls. Signal Forge Pro and
-									its operators shall not be liable for losses, liquidations, missed opportunities, or financial damages arising from your use of the software.
+								<h4 className="font-semibold text-white">3) Local Execution & Hardware Responsibility</h4>
+								<p className="mt-1 text-slate-400">
+									Because software logic executes locally on your hardware, you are solely responsible for machine uptime, internet connection stability, exchange API keys, leverage limits, and power management. Signal Forge Pro disclaims liability for technical slippage or hardware interrupts.
 								</p>
 							</section>
+
 							<section>
-								<h4 className="font-semibold text-white">4) Automation and Technical Systems Disclaimer</h4>
-								<p>
-									Automation features rely on third-party infrastructure and network conditions, including but not limited to exchange APIs, Telegram delivery,
-									internet connectivity, operating system behavior, device resources, and service uptime. Delays, outages, execution drift, rejected orders,
-									or software interruptions may occur. You agree to hold Signal Forge Pro harmless for losses or damages resulting from such technical factors.
+								<h4 className="font-semibold text-white">4) Android Foreground Execution Notice</h4>
+								<p className="mt-1 text-slate-400">
+									For users deploying the Android mobile companion, you acknowledge that Android OS battery savers may suspend background tasks. The application must remain active in the foreground for continuous automated order relay.
 								</p>
 							</section>
+
 							<section>
-								<h4 className="font-semibold text-white">5) External Installation and Security Warnings</h4>
-								<p>
-									Because installation may occur outside official app marketplaces, your device or operating system may display security or publisher warnings.
-									By continuing, you acknowledge this expected behavior and accept responsibility for installation decisions after your own verification.
-								</p>
-							</section>
-							<section>
-								<h4 className="font-semibold text-white">6) Data Handling and Privacy</h4>
-								<p>
-									Signal Forge Pro is designed with a local-first architecture. Core processing and stored data remain on your device environment.
-									Signal Forge Pro does not collect personal trading account data through this landing flow.
-								</p>
-							</section>
-							<section>
-								<h4 className="font-semibold text-white">7) Limitation of Liability and Acceptance</h4>
-								<p>
-									To the maximum extent permitted by applicable law, Signal Forge Pro disclaims liability for direct, indirect, incidental, consequential,
-									special, or exemplary damages related to software use, trading outcomes, or infrastructure failures. By selecting “I Accept & Continue,”
-									you acknowledge that you have read, understood, and agreed to this Risk Disclosure & Liability Waiver.
+								<h4 className="font-semibold text-white">5) Limitation of Total Liability</h4>
+								<p className="mt-1 text-slate-400">
+									To the fullest extent permissible by applicable law, Signal Forge Pro and its affiliates will not be liable for any direct, indirect, incidental, or consequential damages resulting from software use, market swings, or exchange outages.
 								</p>
 							</section>
 						</div>
 
-						<label className="mt-6 flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-slate-200">
+						{/* Acceptance Checkbox */}
+						<label className="mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs sm:text-sm text-slate-200 hover:border-white/20 transition-all">
 							<input
 								type="checkbox"
 								checked={acceptedWaiver}
-								onChange={(event) => setAcceptedWaiver(event.target.checked)}
-								className="mt-0.5 h-4 w-4 rounded border-white/30 bg-transparent accent-[#00D4FF]"
+								onChange={(e) => setAcceptedWaiver(e.target.checked)}
+								className="mt-0.5 h-4 w-4 rounded border-white/30 bg-transparent accent-[#00F59B]"
 							/>
 							<span>
-								I have read and accepted the Signal Forge Pro Risk Disclosure & Liability Waiver. I understand that trading carries risk and I proceed at my own
-								responsibility.
+								I acknowledge that I have read, understood, and agreed to the Signal Forge Pro & Grok Desk Risk Disclosure & Liability Waiver. I confirm that trading carries inherent risk and I accept full responsibility for my execution.
 							</span>
 						</label>
 
-						<div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
+						{/* Modal Actions */}
+						<div className="mt-6 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-white/10 pt-4">
 							<button
 								type="button"
 								onClick={() => setIsWaiverOpen(false)}
-								className="rounded-xl border border-white/15 bg-white/5 px-5 py-2.5 text-sm text-slate-300 transition hover:text-white"
+								className="rounded-xl border border-white/15 bg-white/5 px-5 py-2.5 text-xs font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white"
 							>
 								Cancel
 							</button>
@@ -530,14 +853,14 @@ export default function LandingPage() {
 								type="button"
 								onClick={confirmDownload}
 								disabled={!acceptedWaiver}
-								className="rounded-xl bg-[#00D4FF] px-5 py-2.5 text-sm font-semibold text-[#031017] transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+								className="rounded-xl bg-gradient-to-r from-[#00F59B] to-[#00D4FF] px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-[#050811] shadow-[0_0_20px_rgba(0,245,155,0.4)] transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
 							>
-								I Accept & Continue Download
+								Accept & Download Installer
 							</button>
 						</div>
 					</div>
 				</div>
-			) : null}
+			)}
 		</div>
 	);
 }

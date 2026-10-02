@@ -1,47 +1,60 @@
-# Signal Forge Pro Landing Page
+# Signal Forge Pro & Grok Desk Quantum Landing Page
 
-Premium single-page landing built with Astro + Tailwind, optimized for GitHub Pages static hosting.
+Next-generation, high-performance 3D animated landing page for the Signal Forge Pro & Grok Desk quantitative trading ecosystem. Built with **Astro**, **React**, **Tailwind CSS**, and interactive custom **HTML5 Canvas & 3D WebGL physics**. Optimized for GitHub Pages static hosting.
 
-## Local Development
+---
+
+## 🚀 The Triple-App Suite
+
+The landing page showcases all three sovereign trading tools:
+
+1. **Signal Forge Pro Desktop** (Windows 64-bit)
+   - Zero-cloud, sub-millisecond local execution engine
+   - Direct Binance & exchange API webhook routing
+   - Cryptographic hardware-locked Machine ID licensing
+
+2. **Grok Desk** (Windows 64-bit - *New AI Release*)
+   - Autonomous Grok neural reasoning model for market sentiment & narrative decoding
+   - Real-time institutional liquidity heatmap & order block detection
+   - Multi-window cybernetic workstation HUD
+
+3. **Signal Forge Pro Mobile** (Android ARM64 APK)
+   - Portable Telegram signal interception bridge
+   - Foreground trade confirmation for Binance accounts
+   - Includes critical foreground battery-optimization advisory
+
+---
+
+## 🛠️ Local Development & Testing
 
 ```sh
+# Install dependencies
 npm install
+
+# Start development server
 npm run dev
-```
 
-Production build:
-
-```sh
+# Test production static build locally
 npm run build
 npm run preview
 ```
 
-## App Download Integration
+---
 
-All app download cards and CTA links are controlled from one file:
+## 📦 App Download & Release Management
 
-- `src/data/appLinks.ts`
+All 3 application download links, versions, sizes, system requirements, and highlights are managed from a single central file:
 
-Update this file whenever you publish a new desktop or Android release (version, size, URL).  
-This keeps landing page frontend and app distribution in sync without redesign work.
+- [`src/data/appLinks.ts`](file:///d:/AntigravityProjects/LandingPage/src/data/appLinks.ts)
 
-## GitHub Pages Deployment
+Whenever you build a new version of **Signal Forge Pro Desktop**, **Grok Desk**, or **Signal Forge Pro Mobile**, update the version number and installer URL in this file. The cards and download modals will automatically stay in sync.
 
-Auto-deployment workflow is included:
+---
 
-- `.github/workflows/deploy.yml`
+## 🌐 GitHub Pages Deployment
 
-On every push to `main`, GitHub Actions:
+Continuous deployment is preconfigured in:
 
-1. Installs dependencies
-2. Builds Astro static output
-3. Publishes `dist` to GitHub Pages
+- [`.github/workflows/deploy.yml`](file:///d:/AntigravityProjects/LandingPage/.github/workflows/deploy.yml)
 
-### Required GitHub Settings
-
-In repository settings:
-
-1. Open **Pages**
-2. Set source to **GitHub Actions**
-
-No server backend is required. The page is fully static and production-ready for Pages.
+Pushing changes to `main` automatically triggers GitHub Actions to build the static bundle and deploy to GitHub Pages.
