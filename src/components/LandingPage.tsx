@@ -7,7 +7,6 @@ import {
 	Bot,
 	Cpu,
 	Download,
-	FileBadge2,
 	Globe,
 	Lock,
 	ShieldCheck,
@@ -18,14 +17,16 @@ import {
 	Layers,
 	CheckCircle2,
 	Radio,
+	CreditCard,
+	QrCode,
+	Check
 } from 'lucide-react';
 import CyberCanvasBackground from './CyberCanvasBackground';
 import LiveMarketTicker from './LiveMarketTicker';
 import InteractiveTerminalSimulator from './InteractiveTerminalSimulator';
 import AppCard3D from './AppCard3D';
+import PaymentModal, { subscriptionPlans } from './PaymentModal';
 import { appLinks, type AppLink } from '../data/appLinks';
-
-const membershipFormUrl = 'https://forms.gle/dU8LwPXDmekQ8k4R7';
 
 const ecosystemCards = [
 	{
@@ -99,6 +100,10 @@ export default function LandingPage() {
 	const [acceptedWaiver, setAcceptedWaiver] = useState(false);
 	const [pendingDownloadUrl, setPendingDownloadUrl] = useState<string | null>(null);
 	const [pendingDownloadLabel, setPendingDownloadLabel] = useState('');
+	
+	// Payment Modal State
+	const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+	const [selectedPaymentPlanId, setSelectedPaymentPlanId] = useState('6-months');
 
 	const baseUrl = import.meta.env.BASE_URL || '/';
 
@@ -119,6 +124,11 @@ export default function LandingPage() {
 		setPendingDownloadLabel(label);
 		setAcceptedWaiver(false);
 		setIsWaiverOpen(true);
+	};
+
+	const openPaymentModal = (planId = '6-months') => {
+		setSelectedPaymentPlanId(planId);
+		setIsPaymentModalOpen(true);
 	};
 
 	const confirmDownload = () => {
@@ -182,25 +192,25 @@ export default function LandingPage() {
 							<Sparkles size={13} className="text-[#A855F7]" />
 							Grok AI Desk
 						</a>
+						<a href="#pricing" className="transition hover:text-[#00F59B] flex items-center gap-1">
+							<CreditCard size={13} className="text-[#00F59B]" />
+							Pricing & Binance Pay
+						</a>
 						<a href="#ecosystem" className="transition hover:text-white">
 							Ecosystem
-						</a>
-						<a href="#licensing" className="transition hover:text-white">
-							Hardware License
 						</a>
 					</div>
 
 					{/* Action Buttons */}
 					<div className="flex items-center gap-3">
-						<a
-							href={membershipFormUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white"
+						<button
+							type="button"
+							onClick={() => openPaymentModal('6-months')}
+							className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-2 text-xs font-semibold text-amber-300 transition hover:bg-amber-500/20 hover:text-white"
 						>
-							<FileBadge2 size={14} className="text-[#00D4FF]" />
-							License Form
-						</a>
+							<QrCode size={14} className="text-amber-400" />
+							Binance Pay
+						</button>
 						<a
 							href="#apps"
 							className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00F59B] to-[#00D4FF] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#050811] shadow-[0_0_20px_rgba(0,245,155,0.4)] transition hover:brightness-110 active:scale-95"
@@ -274,13 +284,14 @@ export default function LandingPage() {
 									<Download size={18} />
 									Download 3 Apps
 								</a>
-								<a
-									href="#terminal"
-									className="inline-flex items-center justify-center gap-2.5 rounded-2xl border border-[#A855F7]/50 bg-[#A855F7]/10 px-6 py-4 text-sm font-bold uppercase tracking-wider text-[#D8B4FE] shadow-[0_0_25px_rgba(168,85,247,0.25)] transition hover:bg-[#A855F7]/20"
+								<button
+									type="button"
+									onClick={() => openPaymentModal('6-months')}
+									className="inline-flex items-center justify-center gap-2.5 rounded-2xl border border-amber-500/50 bg-amber-500/10 px-6 py-4 text-sm font-bold uppercase tracking-wider text-amber-300 shadow-[0_0_25px_rgba(245,158,11,0.25)] transition hover:bg-amber-500/20 active:scale-95"
 								>
-									<Sparkles size={18} />
-									Try Live Terminal
-								</a>
+									<QrCode size={18} />
+									Subscribe via Binance Pay
+								</button>
 							</div>
 						</div>
 
@@ -623,57 +634,116 @@ export default function LandingPage() {
 					</div>
 				</section>
 
-				{/* Hardware Licensing & Application Banner */}
+				{/* Brand New Dedicated Pricing & Binance Pay Section */}
 				<section
-					id="licensing"
+					id="pricing"
 					data-aos="fade-up"
-					className="relative overflow-hidden rounded-3xl border border-[#00D4FF]/30 bg-gradient-to-r from-[#00D4FF]/15 via-[#071326] to-[#00F59B]/10 p-8 sm:p-12 shadow-[0_0_50px_rgba(0,212,255,0.15)] backdrop-blur-2xl"
+					className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-b from-[#091122] via-[#070b16] to-[#040710] p-6 sm:p-12 shadow-[0_0_60px_rgba(245,158,11,0.15)] backdrop-blur-2xl"
 				>
-					<div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#00D4FF]/20 blur-3xl" />
-					<div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[#00F59B]/15 blur-3xl" />
+					<div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl" />
+					<div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-[#00F59B]/10 blur-3xl" />
 
-					<div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-						<div className="max-w-2xl space-y-4">
-							<div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#7CEBFF] font-mono-numbers">
-								<FileBadge2 size={16} />
-								MEMBERSHIP & LICENSE AUTHORIZATION
+					<div className="relative text-center max-w-3xl mx-auto space-y-3 mb-10">
+						<div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/15 px-4 py-1 text-xs font-semibold text-amber-300 font-mono-numbers">
+							<QrCode size={14} className="text-amber-400" />
+							INSTANT BINANCE PAY SUBSCRIPTIONS
+						</div>
+						<h2 className="font-display text-3xl sm:text-5xl font-black text-white leading-tight">
+							Simple, Transparent <span className="text-[#00F59B]">Subscription Packages</span>
+						</h2>
+						<p className="text-sm sm:text-base text-slate-300">
+							Select your package, scan the Binance QR code, and receive your hardware-locked activation license with immediate VIP room access.
+						</p>
+					</div>
+
+					{/* 4 Plans Pricing Matrix */}
+					<div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+						{subscriptionPlans.map((plan) => {
+							return (
+								<div
+									key={plan.id}
+									className={`relative flex flex-col justify-between rounded-3xl border p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 ${
+										plan.popular
+											? 'border-[#00F59B] bg-gradient-to-b from-[#00F59B]/15 via-white/[0.04] to-black/70 shadow-[0_0_35px_rgba(0,245,155,0.25)]'
+											: 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]'
+									}`}
+								>
+									{plan.badge && (
+										<span
+											className={`absolute -top-3 right-4 rounded-full px-3 py-0.5 text-xs font-bold tracking-wide border shadow-md ${
+												plan.popular
+													? 'bg-[#00F59B] text-black border-[#00F59B]'
+													: 'bg-[#A855F7] text-white border-[#A855F7]'
+											}`}
+										>
+											{plan.badge}
+										</span>
+									)}
+
+									<div>
+										<h3 className="font-display text-lg font-bold text-white">{plan.name}</h3>
+										<p className="text-xs text-slate-400 font-mono-numbers">{plan.duration}</p>
+
+										<div className="mt-4 flex items-baseline gap-1">
+											<span className="font-display text-3xl font-black text-white">${plan.price}</span>
+											<span className="text-xs font-mono-numbers text-slate-400">USDT</span>
+										</div>
+										<p className="text-xs font-mono-numbers text-[#00D4FF] mt-1">{plan.monthlyRate}</p>
+										{plan.discountText && (
+											<span className="inline-block mt-1 text-[11px] font-semibold text-[#00F59B]">
+												{plan.discountText}
+											</span>
+										)}
+
+										<ul className="mt-6 space-y-2.5 text-xs text-slate-300 border-t border-white/10 pt-4">
+											{plan.features.map((feat, i) => (
+												<li key={i} className="flex items-start gap-2">
+													<Check size={14} className="text-[#00F59B] shrink-0 mt-0.5" />
+													<span>{feat}</span>
+												</li>
+											))}
+										</ul>
+									</div>
+
+									<div className="mt-8 pt-4 border-t border-white/10">
+										<button
+											type="button"
+											onClick={() => openPaymentModal(plan.id)}
+											className={`w-full inline-flex items-center justify-center gap-2 rounded-2xl py-3 px-4 text-xs font-bold uppercase tracking-wider transition-all duration-300 active:scale-95 shadow-lg ${
+												plan.popular
+													? 'bg-gradient-to-r from-[#00F59B] to-[#00D4FF] text-[#050811] hover:brightness-110 shadow-[0_0_20px_rgba(0,245,155,0.4)]'
+													: 'bg-white/10 text-white hover:bg-white/20'
+											}`}
+										>
+											<QrCode size={14} /> Pay with Binance
+										</button>
+									</div>
+								</div>
+							);
+						})}
+					</div>
+
+					{/* Bottom Reassurance Banner */}
+					<div className="mt-10 rounded-2xl border border-white/10 bg-black/40 p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+						<div className="flex items-center gap-3">
+							<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30">
+								<ShieldCheck size={22} />
 							</div>
-							<h2 className="font-display text-2xl sm:text-4xl font-extrabold text-white leading-tight">
-								Apply for Official Membership & Hardware License Access
-							</h2>
-							<p className="text-sm sm:text-base leading-relaxed text-slate-300">
-								Each Signal Forge Pro and Grok Desk deployment operates with on-device cryptographic activation tied
-								to your hardware ID. Complete our official registration form to submit your machine fingerprint and obtain
-								your verified license key.
-							</p>
-
-							<div className="flex flex-wrap items-center gap-6 pt-2 text-xs text-slate-300 font-mono-numbers">
-								<span className="flex items-center gap-1.5">
-									<CheckCircle2 size={14} className="text-[#00F59B]" /> Instant Verification Queue
-								</span>
-								<span className="flex items-center gap-1.5">
-									<CheckCircle2 size={14} className="text-[#00D4FF]" /> Dedicated Onboarding Support
-								</span>
-								<span className="flex items-center gap-1.5">
-									<CheckCircle2 size={14} className="text-[#A855F7]" /> Lifetime Local Access
-								</span>
+							<div>
+								<p className="text-sm font-bold text-white">Direct On-Chain Binance Pay Security</p>
+								<p className="text-xs text-slate-400">
+									No third-party credit card storage or recurring charges. You maintain 100% control over payments from your Binance account.
+								</p>
 							</div>
 						</div>
 
-						<div className="flex flex-col gap-3 shrink-0">
-							<a
-								href={membershipFormUrl}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#00D4FF] to-[#00F59B] px-8 py-4 text-sm font-bold uppercase tracking-wider text-[#050811] shadow-[0_0_25px_rgba(0,212,255,0.4)] transition hover:brightness-110 active:scale-95"
-							>
-								Submit Membership Application
-								<ArrowRight size={16} />
-							</a>
-							<span className="text-center text-[11px] text-slate-400">
-								Official Google Forms Enrollment
-							</span>
-						</div>
+						<button
+							type="button"
+							onClick={() => openPaymentModal('6-months')}
+							className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-black transition hover:brightness-110 active:scale-95"
+						>
+							Open Payment Scanner <ArrowRight size={14} />
+						</button>
 					</div>
 				</section>
 
@@ -748,7 +818,9 @@ export default function LandingPage() {
 							<a href="#apps" className="transition hover:text-white">Download Apps</a>
 							<a href="#terminal" className="transition hover:text-white">Terminal Simulator</a>
 							<a href="#grok" className="transition hover:text-white">Grok Desk AI</a>
-							<a href="#licensing" className="transition hover:text-white">Apply License</a>
+							<button type="button" onClick={() => openPaymentModal('6-months')} className="transition hover:text-amber-400 text-left">
+								Pricing & Binance Pay
+							</button>
 							<a href="https://t.me/SignalBotPr" target="_blank" rel="noreferrer" className="text-[#00D4FF] hover:underline">
 								Telegram Community
 							</a>
@@ -861,6 +933,14 @@ export default function LandingPage() {
 					</div>
 				</div>
 			)}
+
+			{/* Interactive Binance Pay Checkout Portal Modal */}
+			<PaymentModal
+				isOpen={isPaymentModalOpen}
+				onClose={() => setIsPaymentModalOpen(false)}
+				baseUrl={baseUrl}
+				initialPlanId={selectedPaymentPlanId}
+			/>
 		</div>
 	);
 }

@@ -58,3 +58,16 @@ Continuous deployment is preconfigured in:
 - [`.github/workflows/deploy.yml`](file:///d:/AntigravityProjects/LandingPage/.github/workflows/deploy.yml)
 
 Pushing changes to `main` automatically triggers GitHub Actions to build the static bundle and deploy to GitHub Pages.
+
+---
+
+## 💳 Binance Pay Subscriptions & Referral System
+
+The landing page includes an integrated on-chain Binance Pay subscription flow:
+- **Starter Pass** (1 Month • $99 USDT)
+- **Quarterly Trader** (3 Months • $285 USDT, 4% discount)
+- **Semi-Annual Pro** (6 Months • $540 USDT, 9% discount - *Most Popular*)
+- **Annual VIP Mastery** (12 Months • $1,010 USDT, 15% discount - *Best Value*)
+
+Subscribers scan the QR code to pay via Binance Pay (`Rasom_Atif`), enter their subscriber info and optional **Referral Email (Registered Member's Email)**, and verify with one-click Email or Telegram dispatch to `@SignalBotPr`.
+
