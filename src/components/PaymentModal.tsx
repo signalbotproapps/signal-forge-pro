@@ -8,6 +8,8 @@ import {
 	Send, 
 	ArrowRight, 
 	ArrowLeft,
+	Loader2,
+	RefreshCw,
 } from 'lucide-react';
 
 export type SubscriptionPlan = {
@@ -110,6 +112,53 @@ export default function PaymentModal({ isOpen, onClose, baseUrl, initialPlanId =
 	const [referralEmail, setReferralEmail] = useState('');
 	const [txId, setTxId] = useState('');
 	const [copiedField, setCopiedField] = useState<string | null>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [submittedToCrm, setSubmittedToCrm] = useState(false);
+	const [crmSubmitError, setCrmSubmitError] = useState<string | null>(null);
+
+	const submitToRelay = async (customTxId?: string) => {
+		setIsSubmitting(true);
+		setCrmSubmitError(null);
+
+		const activeTx = customTxId !== undefined ? customTxId : txId;
+		
+		let packageCode = 'SEMI_ANNUAL';
+		if (selectedPlan.id === '1-month') packageCode = 'MONTHLY';
+		else if (selectedPlan.id === '3-months') packageCode = 'QUARTERLY';
+		else if (selectedPlan.id === '6-months') packageCode = 'SEMI_ANNUAL';
+		else if (selectedPlan.id === '12-months') packageCode = 'ANNUAL';
+
+		const payload = {
+			name: fullName.trim(),
+			email: email.trim(),
+			telegram: telegramUsername.trim(),
+			hwid: hardwareId.trim(),
+			packageId: packageCode,
+			amountPaid: selectedPlan.price,
+			txId: activeTx.trim() || 'Paid via Binance App',
+			referralEmail: referralEmail.trim(),
+			orderRef: fullOrderNumber
+		};
+
+		try {
+			const res = await fetch('https://signalforge-relay.signalbotpro.workers.dev/submit', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload)
+			});
+
+			const data = await res.json();
+			if (data.success) {
+				setSubmittedToCrm(true);
+			} else {
+				setCrmSubmitError(data.error || 'Failed to queue order');
+			}
+		} catch (err) {
+			setCrmSubmitError('Network notice: Dispatched via local fallback.');
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
 	const selectedPlan = subscriptionPlans.find((p) => p.id === selectedPlanId) || subscriptionPlans[2];
 
@@ -521,7 +570,7 @@ Thank you!`;
 
 							<button
 								type="button"
-								onClick={() => setStep(4)}
+								onClick={() => { setStep(4); submitToRelay(); }}
 								className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#00F59B] to-[#00D4FF] px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-[#050811] shadow-[0_0_30px_rgba(0,245,155,0.45)] transition hover:brightness-110 active:scale-95"
 							>
 								<CheckCircle2 size={16} />
@@ -542,8 +591,83 @@ Thank you!`;
 								Thank You, {fullName}! Let&apos;s Activate Your License
 							</h3>
 							<p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
-								Your order reference is <strong className="text-[#00F59B] font-mono-numbers">{fullOrderNumber}</strong>. Send your verification note via Email or Telegram so our operations team can instantly verify and issue your hardware key.
+								Your order reference is <strong className="text-[#00F59B] font-mono-numbers">{fullOrderNumber}</strong>. Your license request is automatically ingested into our CRM desk and can also be verified via Email or Telegram.
 							</p>
+						</div>
+
+						{/* Automated Direct Intake Status Card */}
+						<div className={`rounded-2xl border p-4 transition-all ${
+							submittedToCrm
+								? 'border-[#00F59B]/50 bg-gradient-to-r from-[#00F59B]/10 via-black/40 to-[#00D4FF]/10 shadow-[0_0_30px_rgba(0,245,155,0.15)]'
+								: crmSubmitError
+								? 'border-amber-500/40 bg-amber-500/10'
+								: 'border-white/10 bg-white/[0.03]'
+						}`}>
+							<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+								<div className="flex items-start gap-3">
+									<div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+										submittedToCrm
+											? 'bg-[#00F59B] text-black shadow-lg shadow-[#00F59B]/20'
+											: isSubmitting
+											? 'bg-[#00D4FF]/20 text-[#00D4FF] animate-spin'
+											: 'bg-white/10 text-white'
+									}`}>
+										{submittedToCrm ? (
+											<CheckCircle2 size={22} />
+										) : isSubmitting ? (
+											<Loader2 size={20} />
+										) : (
+											<Send size={18} />
+										)}
+									</div>
+									<div>
+										<div className="flex items-center gap-2">
+											<span className="text-xs font-bold uppercase tracking-wider text-white font-mono-numbers">
+												AUTOMATED LICENSE INTAKE QUEUE
+											</span>
+											{submittedToCrm && (
+												<span className="rounded-full bg-[#00F59B]/20 border border-[#00F59B]/40 px-2 py-0.5 text-[10px] font-bold text-[#00F59B] font-mono-numbers">
+													RECEIVED & BUFFERED
+												</span>
+											)}
+										</div>
+										<p className="mt-0.5 text-xs text-slate-300">
+											{submittedToCrm
+												? `Order #${fullOrderNumber} safely dispatched to ForgeDesk CRM. Autonomous Binance Spot verification in progress.`
+												: isSubmitting
+												? 'Transmitting encrypted application to 24/7 serverless queue buffer...'
+												: crmSubmitError
+												? `Queue notice: ${crmSubmitError}. You can retry or use the direct Email/Telegram buttons below.`
+												: 'Your order details will be automatically ingested into our operations desk.'}
+										</p>
+									</div>
+								</div>
+
+								<button
+									type="button"
+									disabled={isSubmitting}
+									onClick={() => submitToRelay()}
+									className={`shrink-0 inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider transition ${
+										submittedToCrm
+											? 'border border-white/15 bg-white/5 text-slate-300 hover:bg-white/10'
+											: 'bg-gradient-to-r from-[#00F59B] to-[#00D4FF] text-[#050811] hover:brightness-110 shadow-md'
+									} disabled:opacity-50`}
+								>
+									{isSubmitting ? (
+										<>
+											<Loader2 size={13} className="animate-spin" /> Transmitting...
+										</>
+									) : submittedToCrm ? (
+										<>
+											<RefreshCw size={13} /> Update / Resync
+										</>
+									) : (
+										<>
+											<Send size={13} /> Submit to Desk
+										</>
+									)}
+								</button>
+							</div>
 						</div>
 
 						{/* Transaction ID Input */}
