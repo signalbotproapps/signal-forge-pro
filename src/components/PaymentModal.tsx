@@ -175,9 +175,15 @@ export default function PaymentModal({ isOpen, onClose, baseUrl, initialPlanId =
 		setTimeout(() => setCopiedField(null), 2500);
 	};
 
-	// Generate a clean alphanumeric order reference code
-	const rawId = useId().replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase();
-	const fullOrderNumber = `SFP-${new Date().getFullYear()}-${rawId || '789X2'}`;
+	// Generate a guaranteed unique alphanumeric order reference code per checkout session
+	const [fullOrderNumber] = useState(() => {
+		const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+		let code = '';
+		for (let i = 0; i < 5; i++) {
+			code += chars.charAt(Math.floor(Math.random() * chars.length));
+		}
+		return `SFP-${new Date().getFullYear()}-${code}`;
+	});
 
 	const emailSubject = `[SUBSCRIPTION PAYMENT] ${selectedPlan.name} ($${selectedPlan.price} USDT) - ${fullName || 'New Subscriber'}`;
 	
