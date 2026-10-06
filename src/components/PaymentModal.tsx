@@ -1,4 +1,4 @@
-import { useState, useId } from 'react';
+import { useState } from 'react';
 import { 
 	X, 
 	CheckCircle2, 
@@ -10,6 +10,7 @@ import {
 	ArrowLeft,
 	Loader2,
 	RefreshCw,
+	HelpCircle,
 } from 'lucide-react';
 
 export type SubscriptionPlan = {
@@ -115,6 +116,9 @@ export default function PaymentModal({ isOpen, onClose, baseUrl, initialPlanId =
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [submittedToCrm, setSubmittedToCrm] = useState(false);
 	const [crmSubmitError, setCrmSubmitError] = useState<string | null>(null);
+	const [hasStartedBot, setHasStartedBot] = useState(false);
+	const [showTgHelp, setShowTgHelp] = useState(false);
+	const [showHwidHelp, setShowHwidHelp] = useState(false);
 
 	const submitToRelay = async (customTxId?: string) => {
 		setIsSubmitting(true);
@@ -355,7 +359,7 @@ Thank you!`;
 						<div className="flex items-center justify-between">
 							<div>
 								<h3 className="text-lg font-bold text-white font-display">Subscriber & License Information</h3>
-								<p className="text-xs text-slate-400">Where should we deliver your activation keys and Telegram room invitation?</p>
+								<p className="text-xs text-slate-400">All fields marked with <span className="text-[#00F59B] font-bold">*</span> are required for instant automated bot dispatch.</p>
 							</div>
 							<div className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-right font-mono-numbers">
 								<span className="text-[10px] text-slate-400 block">Selected:</span>
@@ -364,6 +368,7 @@ Thank you!`;
 						</div>
 
 						<div className="grid gap-4 sm:grid-cols-2">
+							{/* Full Name */}
 							<div>
 								<label className="block text-xs font-semibold text-slate-300 mb-1.5">
 									Full Name <span className="text-[#00F59B]">*</span>
@@ -378,6 +383,7 @@ Thank you!`;
 								/>
 							</div>
 
+							{/* Email Address */}
 							<div>
 								<label className="block text-xs font-semibold text-slate-300 mb-1.5">
 									Email Address <span className="text-[#00F59B]">*</span>
@@ -392,32 +398,81 @@ Thank you!`;
 								/>
 							</div>
 
+							{/* Telegram Username - COMPULSORY */}
 							<div>
-								<label className="block text-xs font-semibold text-slate-300 mb-1.5">
-									Telegram Username <span className="text-slate-500">(Optional for VIP room access)</span>
-								</label>
+								<div className="flex items-center justify-between mb-1.5">
+									<label className="text-xs font-semibold text-slate-300">
+										Telegram Username <span className="text-[#00F59B]">*</span>
+									</label>
+									<button
+										type="button"
+										onClick={() => setShowTgHelp(!showTgHelp)}
+										className="text-[11px] text-[#00D4FF] hover:underline flex items-center gap-1 transition"
+									>
+										<HelpCircle size={12} /> {showTgHelp ? 'Hide Guide' : 'How to find username?'}
+									</button>
+								</div>
 								<input
 									type="text"
+									required
 									value={telegramUsername}
-									onChange={(e) => setTelegramUsername(e.target.value)}
+									onChange={(e) => {
+										let val = e.target.value.trim();
+										if (val && !val.startsWith('@')) val = '@' + val;
+										setTelegramUsername(val);
+									}}
 									placeholder="e.g. @AlexTrader"
-									className="w-full rounded-xl border border-white/15 bg-black/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#00D4FF] focus:outline-none"
+									className="w-full rounded-xl border border-white/15 bg-black/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#00D4FF] focus:outline-none font-mono-numbers"
 								/>
+
+								{showTgHelp && (
+									<div className="mt-2 rounded-xl border border-[#00D4FF]/30 bg-[#00D4FF]/5 p-3 text-xs text-slate-300 space-y-1.5 animate-fadeIn">
+										<p className="font-semibold text-white flex items-center gap-1">
+											<span className="text-[#00D4FF]">ℹ️</span> How to find or create your Telegram Username:
+										</p>
+										<p>• <strong>If you already have one:</strong> Open Telegram ➔ tap <strong>Settings</strong> ➔ your username is listed under your account name (e.g. <span className="text-[#00F59B] font-mono">@AlexTrader</span>).</p>
+										<p>• <strong>If you don&apos;t have one yet:</strong> Open Telegram ➔ tap <strong>Settings</strong> ➔ tap <strong>Set Username</strong> ➔ choose any handle (takes 5 seconds). This allows our manager bot to privately dispatch your license key.</p>
+									</div>
+								)}
 							</div>
 
+							{/* Machine Hardware ID (HWID) - COMPULSORY */}
 							<div>
-								<label className="block text-xs font-semibold text-slate-300 mb-1.5">
-									Machine Hardware ID <span className="text-slate-500">(Optional - can send later)</span>
-								</label>
+								<div className="flex items-center justify-between mb-1.5">
+									<label className="text-xs font-semibold text-slate-300">
+										Machine Hardware ID (HWID) <span className="text-[#00F59B]">*</span>
+									</label>
+									<button
+										type="button"
+										onClick={() => setShowHwidHelp(!showHwidHelp)}
+										className="text-[11px] text-[#A855F7] hover:underline flex items-center gap-1 transition"
+									>
+										<HelpCircle size={12} /> {showHwidHelp ? 'Hide Guide' : 'How to get HWID?'}
+									</button>
+								</div>
 								<input
 									type="text"
+									required
 									value={hardwareId}
-									onChange={(e) => setHardwareId(e.target.value)}
-									placeholder="e.g. HWID-4892-BA49-X"
+									onChange={(e) => setHardwareId(e.target.value.trim())}
+									placeholder="Paste your 64-character Machine ID here"
 									className="w-full rounded-xl border border-white/15 bg-black/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#A855F7] focus:outline-none font-mono-numbers"
 								/>
+
+								{showHwidHelp && (
+									<div className="mt-2 rounded-xl border border-[#A855F7]/30 bg-[#A855F7]/5 p-3 text-xs text-slate-300 space-y-1.5 animate-fadeIn">
+										<p className="font-semibold text-white flex items-center gap-1">
+											<span className="text-[#A855F7]">🖥️</span> How to get your Machine Hardware ID:
+										</p>
+										<p>1. Install and launch <strong>Signal Forge Pro</strong> on your trading PC or laptop.</p>
+										<p>2. The startup activation screen displays your unique 64-character Machine Hardware ID.</p>
+										<p>3. Click <strong>Copy Machine ID</strong> in the app, then paste it into this field.</p>
+										<p className="text-[11px] text-slate-400"><em>(This cryptographically binds your license exclusively to your machine for zero-trust institutional privacy.)</em></p>
+									</div>
+								)}
 							</div>
 
+							{/* Referral Email - Optional */}
 							<div className="sm:col-span-2">
 								<label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
 									<span>Referral Email (Registered Member&apos;s Email)</span>
@@ -436,31 +491,87 @@ Thank you!`;
 							</div>
 						</div>
 
-						<div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs text-slate-400 flex items-start gap-2.5">
-							<ShieldCheck size={16} className="text-[#00F59B] shrink-0 mt-0.5" />
-							<span>
-								Your Machine ID binds cryptographically to your machine so no external server can access your trade logic or Binance API keys. If you haven&apos;t installed the app yet, you can leave it blank and send it to us anytime after downloading.
-							</span>
+						{/* MANDATORY STEP: VIP Bot Activation Card */}
+						<div className="rounded-2xl border border-[#00F59B]/35 bg-gradient-to-r from-[#00F59B]/10 via-black/50 to-[#00D4FF]/10 p-4 sm:p-5 space-y-3 shadow-[0_0_30px_rgba(0,245,155,0.1)]">
+							<div className="flex items-start gap-3">
+								<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#00F59B] text-black font-bold shadow-lg shadow-[#00F59B]/20">
+									<Send size={20} />
+								</div>
+								<div className="space-y-1">
+									<div className="flex items-center gap-2">
+										<h4 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider font-mono-numbers">
+											MANDATORY STEP: CONNECT TO VIP OPERATIONS BOT
+										</h4>
+										<span className="rounded-full bg-[#00F59B]/20 border border-[#00F59B]/40 px-2 py-0.5 text-[10px] font-bold text-[#00F59B]">
+											REQUIRED
+										</span>
+									</div>
+									<p className="text-xs text-slate-300 leading-relaxed">
+										Due to Telegram privacy rules, our automated dispatch bot cannot send your private license file or VIP signal room invite until you have initiated the chat.
+									</p>
+								</div>
+							</div>
+
+							<div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+								<a
+									href="https://t.me/SignaForgeProManager_bot"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#00F59B] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#050811] transition hover:brightness-110 active:scale-95 shadow-md shadow-[#00F59B]/20"
+								>
+									<Send size={14} /> Open @SignaForgeProManager_bot & Press Start ➔
+								</a>
+
+								<label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-slate-200 hover:text-white">
+									<input
+										type="checkbox"
+										checked={hasStartedBot}
+										onChange={(e) => setHasStartedBot(e.target.checked)}
+										className="h-4 w-4 rounded border-white/20 bg-black/60 text-[#00F59B] focus:ring-[#00F59B] focus:ring-offset-0 cursor-pointer accent-[#00F59B]"
+									/>
+									<span className="font-medium">
+										I have started the bot on Telegram {telegramUsername ? `(${telegramUsername})` : ''}
+									</span>
+								</label>
+							</div>
 						</div>
 
-						<div className="flex items-center justify-between pt-2">
-							<button
-								type="button"
-								onClick={() => setStep(1)}
-								className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white"
-							>
-								<ArrowLeft size={14} /> Back to Plans
-							</button>
+						{/* Action Buttons */}
+						<div className="space-y-2 pt-2">
+							<div className="flex items-center justify-between">
+								<button
+									type="button"
+									onClick={() => setStep(1)}
+									className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white"
+								>
+									<ArrowLeft size={14} /> Back to Plans
+								</button>
 
-							<button
-								type="button"
-								disabled={!fullName.trim() || !email.trim() || !email.includes('@')}
-								onClick={() => setStep(3)}
-								className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#00F59B] to-[#00D4FF] px-6 py-3 text-xs font-bold uppercase tracking-wider text-[#050811] shadow-[0_0_25px_rgba(0,245,155,0.4)] transition hover:brightness-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
-							>
-								Proceed to Binance Pay
-								<ArrowRight size={15} />
-							</button>
+								<button
+									type="button"
+									disabled={
+										!fullName.trim() ||
+										!email.trim() ||
+										!email.includes('@') ||
+										!telegramUsername.trim() ||
+										telegramUsername.trim().length < 3 ||
+										!hardwareId.trim() ||
+										hardwareId.trim().length < 8 ||
+										!hasStartedBot
+									}
+									onClick={() => setStep(3)}
+									className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#00F59B] to-[#00D4FF] px-6 py-3 text-xs font-bold uppercase tracking-wider text-[#050811] shadow-[0_0_25px_rgba(0,245,155,0.4)] transition hover:brightness-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+								>
+									Proceed to Binance Pay
+									<ArrowRight size={15} />
+								</button>
+							</div>
+
+							{(!fullName.trim() || !email.trim() || !email.includes('@') || !telegramUsername.trim() || !hardwareId.trim() || !hasStartedBot) && (
+								<p className="text-[11px] text-amber-400/90 text-right font-mono-numbers">
+									* Please fill all required fields and verify starting @SignaForgeProManager_bot to continue
+								</p>
+							)}
 						</div>
 					</div>
 				)}
